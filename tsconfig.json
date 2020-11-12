@@ -14,7 +14,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": false,
     "inlineSourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "noErrorTruncation": true
   },
   "include": ["src", "jest"]
 }

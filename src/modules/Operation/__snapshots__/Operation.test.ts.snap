@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Operation Can be created 1`] = `
+Operation {
+  "method": "GET",
+  "payload": Model {
+    "base": UndefinedType {
+      "_tag": "UndefinedType",
+      "decode": [Function],
+      "encode": [Function],
+      "is": [Function],
+      "name": "undefined",
+      "validate": [Function],
+    },
+    "name": "operation payload",
+  },
+  "responses": Array [
+    Object {
+      "model": Model {
+        "base": UndefinedType {
+          "_tag": "UndefinedType",
+          "decode": [Function],
+          "encode": [Function],
+          "is": [Function],
+          "name": "undefined",
+          "validate": [Function],
+        },
+        "name": "bad response",
+      },
+      "status": 200,
+    },
+  ],
+  "url": [Function],
+}
+`;

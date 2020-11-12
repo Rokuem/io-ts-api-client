@@ -3,21 +3,26 @@ export class TypedEmitter<
 > {
   private listeners: Partial<
     {
-      [key in keyof Events]: Set<(...args: any[]) => void>;
+      [key in keyof Events]: Set<(...args: Parameters<Events[key]>) => void>;
     }
   > = {};
 
   public on<K extends keyof Events>(
     ...[event, cb]:
       | [event: K, cb: Events[K]]
-      | ['message', (...args: any[]) => void]
+      | [
+          'message',
+          <E extends keyof Events>(
+            ...args: [event: E, ...params: Parameters<Events[E]>]
+          ) => void
+        ]
   ) {
     this.listeners[event] = this.listeners[event] || (new Set() as any);
 
     const eventListeners = this.listeners[event];
 
     if (eventListeners) {
-      eventListeners.add(cb);
+      eventListeners.add(cb as any);
     }
   }
 
@@ -56,7 +61,7 @@ export class TypedEmitter<
     }
 
     const eventListeners = this.listeners[event];
-    eventListeners?.forEach((cb) => cb(...(params as any)));
+    eventListeners?.forEach((cb: any) => cb(...(params as any)));
   }
 
   public resetListeners(event?: keyof Events) {
