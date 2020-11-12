@@ -12,7 +12,9 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": false
+    "forceConsistentCasingInFileNames": false,
+    "inlineSourceMap": true,
+    "inlineSources": true
   },
   "include": ["src", "jest"]
 }

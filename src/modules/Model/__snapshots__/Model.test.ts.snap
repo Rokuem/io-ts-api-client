@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`A model When created Should match the snapshot: Basic Model 1`] = `
+Model {
+  "base": InterfaceType {
+    "_tag": "InterfaceType",
+    "decode": [Function],
+    "encode": [Function],
+    "is": [Function],
+    "name": "{ key: \\"value\\" }",
+    "props": Object {
+      "key": LiteralType {
+        "_tag": "LiteralType",
+        "decode": [Function],
+        "encode": [Function],
+        "is": [Function],
+        "name": "\\"value\\"",
+        "validate": [Function],
+        "value": "value",
+      },
+    },
+    "validate": [Function],
+  },
+  "name": "snapshot model",
+}
+`;
+
+exports[`A model When validating Should emit error when the types do not match: Error message 1`] = `"Expecting \\"bar\\" at foo but instead got: \\"bob\\""`;
+
+exports[`A model When validating Should log error when the types do not match in debug mode: Validation Error Message 1`] = `
+Array [
+  "VALIDATION FAILED FOR ERROR MESSAGE TEST MODEL: Expecting \\"bar\\" at foo but instead got: \\"bob\\" at: 
+ {
+  \\"foo\\": \\"bob\\"
+}",
+]
+`;
+
+exports[`A model When validating Should log success when the types match in debug mode: Validation Success Message 1`] = `
+Array [
+  "Target is a valid SUCCESS MESSAGE TEST MODEL!",
+  Object {
+    "target": Object {
+      "foo": "bar",
+    },
+  },
+]
+`;

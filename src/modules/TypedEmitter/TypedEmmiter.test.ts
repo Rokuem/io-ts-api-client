@@ -3,8 +3,9 @@ import { TypedEmitter } from './TypedEmmiter';
 describe('TypedEmitter', () => {
   describe('With a simple setup', () => {
     const emitter = new TypedEmitter<{
-      event1: (payload: string) => string;
+      event1: (payload: string) => void;
       event2: () => void;
+      event3: (foo: string, bar: string) => void;
     }>();
 
     beforeEach(() => {
@@ -70,12 +71,13 @@ describe('TypedEmitter', () => {
       expect(cb2).toHaveBeenCalled();
     });
 
-    test('When emitting an event, the generic message event should also be emitted', () => {
+    test('When emitting an event, the generic message event should also be emitted with the same arguments', () => {
       const cb = jest.fn();
       emitter.on('message', cb);
-      emitter.emit('event2');
+      const params = ['event3', 'foo', 'bar'] as const;
+      emitter.emit(...params);
 
-      expect(cb).toHaveBeenCalled();
+      expect(cb).toHaveBeenCalledWith(...params);
     });
   });
 });

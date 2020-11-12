@@ -14,6 +14,6 @@ module.exports = {
   testPathIgnorePatterns: ['__tests__/__helpers__/*', 'e2e'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  collectCoverageFrom: ['src/**/*.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/*test.ts'],
   testMatch: [path.join(__dirname, '*/**/*.@(spec|test).@(js|ts)?(x)')],
 };

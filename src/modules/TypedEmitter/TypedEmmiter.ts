@@ -7,7 +7,11 @@ export class TypedEmitter<
     }
   > = {};
 
-  public on<K extends keyof Events>(event: K | 'message', cb: Events[K]) {
+  public on<K extends keyof Events>(
+    ...[event, cb]:
+      | [event: K, cb: Events[K]]
+      | ['message', (...args: any[]) => void]
+  ) {
     this.listeners[event] = this.listeners[event] || (new Set() as any);
 
     const eventListeners = this.listeners[event];
@@ -28,23 +32,31 @@ export class TypedEmitter<
     return true;
   }
 
-  public once<K extends keyof Events>(event: K | 'message', cb: Events[K]) {
+  public once<K extends keyof Events>(
+    ...[event, cb]:
+      | [event: K, cb: Events[K]]
+      | ['message', (...args: any[]) => void]
+  ) {
     const onceCb = (...args: Parameters<Events[K]>) => {
       cb(...args);
       this.off(event, onceCb as any);
     };
 
-    this.on(event, onceCb as Events[K]);
+    this.on(event as any, onceCb as Events[K]);
   }
 
   public emit<K extends keyof Events>(
-    ...args: [K, ...Parameters<Events[K]>] | ['message', keyof Events]
+    ...[event, ...params]:
+      | [K, ...Parameters<Events[K]>]
+      | ['message', keyof Events, ...Parameters<Events[K]>]
   ) {
-    if (args[0] !== 'message') {
-      this.emit('message', args[0]);
+    if (event !== 'message') {
+      //@ts-ignore
+      this.emit('message', event, ...params);
     }
-    const eventListeners = this.listeners[args[0]];
-    eventListeners?.forEach((cb) => cb(args[1] as any));
+
+    const eventListeners = this.listeners[event];
+    eventListeners?.forEach((cb) => cb(...(params as any)));
   }
 
   public resetListeners(event?: keyof Events) {

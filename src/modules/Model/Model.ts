@@ -40,18 +40,32 @@ export default class Model<T extends t.Any = any> {
     const result = this.base.decode(target);
     const isValid = isRight(result as any);
     const validationErrors = reporter.report(result);
+    const uppercaseModelName = this.name.toUpperCase();
 
     if (!isValid) {
       for (const error of validationErrors) {
+        const validationMessage = `VALIDATION FAILED FOR ${uppercaseModelName}: ${error} at: \n ${JSON.stringify(
+          target,
+          null,
+          2
+        )}`;
+
+        Model.emitter.emit('validation-error', this.name, error);
+
         if (Model.debug) {
-          console.error(error);
+          console.error(validationMessage);
         }
+
         if (Model.strict) {
-          throw new Error(error + ' at: \n' + JSON.stringify(target, null, 2));
+          throw new Error(validationMessage);
         }
       }
-    } else if (Model.debug) {
-      console.log(`${this.name} is valid!`);
+    } else {
+      if (Model.debug) {
+        console.log(`Target is a valid ${uppercaseModelName}!`, { target });
+      }
+
+      Model.emitter.emit('validation-success', this.name);
     }
 
     return isValid;
