@@ -3,10 +3,16 @@ import { testConfig } from './config';
 
 const app = express();
 
-app.get('/sample', (_req, res) => {
-  res.send({
-    ok: true,
-  });
+app.get('/sample/:type', (req, res) => {
+  if (req.params.type === 'ok') {
+    res.send({
+      ok: true,
+    });
+  } else {
+    res.send({
+      accepted: true,
+    });
+  }
 });
 
 app.listen(testConfig.TEST_SERVER_PORT);

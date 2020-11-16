@@ -1,20 +1,22 @@
 import { AxiosInstance } from 'axios';
 import { Operation } from '../Operation/Operation';
 import { addPathToUrl } from '../../helpers/resolveUrl';
-export class Resource<O extends Record<string, Operation<any, any, any, any>>> {
+export class Resource<
+  _Operations extends Record<string, Operation<any, any, any, any>>
+> {
   /**
    * Path to append to the client url for all operations.
    */
-  public basePath!: string;
+  public basePath = '';
 
   /**
    * Api operations the resource can perform.
    */
-  public operations!: O;
+  public operations!: _Operations;
 
   constructor(
-    config: Pick<Resource<any>, 'basePath'> & {
-      operations: O;
+    config: Partial<Pick<Resource<any>, 'basePath'>> & {
+      operations: _Operations;
     }
   ) {
     Object.assign(this, config);
@@ -23,7 +25,7 @@ export class Resource<O extends Record<string, Operation<any, any, any, any>>> {
   /**
    * Executes an operation inside a resource.
    */
-  public execute<K extends keyof O>({
+  public execute<K extends keyof _Operations>({
     options,
     axios,
     url,
@@ -32,7 +34,7 @@ export class Resource<O extends Record<string, Operation<any, any, any, any>>> {
     operation: K;
     url: URL;
     axios: AxiosInstance;
-    options: O[K]['options'];
+    options: _Operations[K]['options'];
   }) {
     const resourceUrl = new URL(url.href);
 
@@ -44,6 +46,6 @@ export class Resource<O extends Record<string, Operation<any, any, any, any>>> {
       options: options as any,
       axios,
       url: resourceUrl,
-    }) as ReturnType<O[K]['execute']>;
+    }) as ReturnType<_Operations[K]['execute']>;
   }
 }
