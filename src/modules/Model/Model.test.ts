@@ -4,19 +4,19 @@ import { t } from '../t/t';
 describe('A model', () => {
   beforeEach(() => {
     Model.emitter.resetListeners();
-    Model.strict = false;
+    Model.throwErrors = false;
     Model.debug = false;
     jest.resetAllMocks();
   });
 
   describe('When created', () => {
     test('Should match the snapshot', () => {
-      const model = new Model(
-        'snapshot model',
-        t.interface({
+      const model = new Model({
+        name: 'snapshot model',
+        model: t.interface({
           key: t.literal('value'),
-        })
-      );
+        }),
+      });
 
       expect(model).toMatchSnapshot('Basic Model');
     });
@@ -26,7 +26,10 @@ describe('A model', () => {
     test('Should emit success when the types match', () => {
       const testModelName = 'test model';
       const cb = jest.fn();
-      const model = new Model(testModelName, t.literal('value'));
+      const model = new Model({
+        name: testModelName,
+        model: t.literal('value'),
+      });
 
       Model.emitter.on('validation-success', (name) => {
         expect(name).toBe(testModelName);
@@ -48,12 +51,12 @@ describe('A model', () => {
 
       const modelName = 'success message test model';
 
-      const model = new Model(
-        modelName,
-        t.interface({
+      const model = new Model({
+        name: modelName,
+        model: t.interface({
           foo: t.literal('bar'),
-        })
-      );
+        }),
+      });
 
       const target = {
         foo: 'bar',
@@ -81,12 +84,12 @@ describe('A model', () => {
 
       const modelName = 'error message test model';
 
-      const model = new Model(
-        modelName,
-        t.interface({
+      const model = new Model({
+        name: modelName,
+        model: t.interface({
           foo: t.literal('bar'),
-        })
-      );
+        }),
+      });
 
       model.validate({
         foo: 'bob',
@@ -104,12 +107,12 @@ describe('A model', () => {
     test('Should emit error when the types do not match', () => {
       const testModelName = 'test model';
       const cb = jest.fn();
-      const model = new Model(
-        testModelName,
-        t.interface({
+      const model = new Model({
+        name: testModelName,
+        model: t.interface({
           foo: t.literal('bar'),
-        })
-      );
+        }),
+      });
       Model.emitter.on('validation-error', (name, error) => {
         expect(name).toBe(testModelName);
         expect(error).toMatchSnapshot('Error message');
@@ -124,18 +127,18 @@ describe('A model', () => {
     });
 
     test('Should throw error when the types do not match in strict mode', () => {
-      Model.strict = true;
+      Model.throwErrors = true;
       const modelName = 'throw error test model';
       const key = 'foo';
       const wrongValue = 'bob';
       const correctValue = 'bar';
 
-      const model = new Model(
-        modelName,
-        t.interface({
+      const model = new Model({
+        name: modelName,
+        model: t.interface({
           [key]: t.literal(correctValue),
-        })
-      );
+        }),
+      });
 
       expect(() => {
         try {

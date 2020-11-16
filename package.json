@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
+    "deep-object-diff": "^1.1.0",
     "fp-ts": "^2.8.4",
     "io-ts": "^2.2.11",
     "io-ts-reporters": "^1.2.2",

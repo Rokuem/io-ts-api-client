@@ -1,60 +1,53 @@
 import axios from 'axios';
-import { ApiResponse } from '../ApiResponse/ApiResponse';
-import { ModelInterface } from '../Model/Model';
-import { Operation } from '../Operation/Operation';
+import { Resource } from '../Resource/Resource';
+import { mapObject } from '../../helpers/mapObject';
+import { addPathToUrl } from '../../helpers/resolveUrl';
 
-export function defineClient<
-  Resources extends Record<string, Record<string, Operation>>,
-  GlobalResponses extends ApiResponse
->(config: {
-  base: string;
-  globalResponses?: GlobalResponses[];
-  resources: Resources;
-}) {
-  const client = axios.create();
+export class Client<Resources extends Record<string, Resource<any>>> {
+  public axiosInstance = axios.create();
+  public base: URL;
 
-  const api: Record<
-    string,
-    Record<string, (...args: any[]) => Promise<any>>
-  > = {};
-
-  for (const resourceKey in config.resources) {
-    const resource = config.resources[resourceKey];
-    for (const operationKey in resource.operations) {
-      const operation: Operation =
-        resource.operations[operationKey as keyof Operation];
-
-      api[resourceKey] = {
-        [operationKey]: async (
-          options: typeof operation['options']
-        ): Promise<any> => {
-          const response = await client.request({
-            method: operation.method,
-            data: operation.payloadConstructor?.(options),
-            url: operation.url(new URL(config.base), options).href,
-          });
-
-          return response.data;
-        },
-      };
+  constructor(base: string, private resources: Resources) {
+    try {
+      this.base = new URL(base);
+    } catch (e) {
+      throw new Error(
+        'Could not create client. Provided base is an invalid URL: ' + base
+      );
     }
   }
 
-  return {
-    ...config,
-    ...((api as any) as {
-      [resource in keyof Resources]: {
-        [operation in keyof Resources[resource]]: (
-          ...args: Resources[resource][operation]['options'] extends never
-            ? []
-            : [options: Resources[resource][operation]['options']]
-        ) => Promise<
-          ModelInterface<
-            | GlobalResponses['model']
-            | Resources[resource][operation]['responses'][number]['model']
-          >
-        >;
-      };
-    }),
-  };
+  public getApi() {
+    return mapObject(
+      this.resources,
+      <K extends keyof Resources, R extends Resource<any>>(
+        _resourceName: K,
+        resource: R
+      ) => {
+        return mapObject(
+          resource.operations as Resources[keyof Resources]['operations'],
+          <O extends keyof Resources[K]['operations']>(operationName: O) => (
+            options: Resources[K]['operations'][O]['options']
+          ) => {
+            const operationUrl = new URL(this.base.href);
+
+            if (resource.basePath) {
+              addPathToUrl(operationUrl, resource.basePath);
+            }
+
+            if (typeof operationName !== 'string') {
+              throw new Error('Operation names must be string');
+            }
+
+            return resource.execute({
+              operation: operationName,
+              axios: this.axiosInstance,
+              options,
+              url: operationUrl,
+            }) as ReturnType<Resources[K]['operations'][O]['execute']>;
+          }
+        );
+      }
+    );
+  }
 }

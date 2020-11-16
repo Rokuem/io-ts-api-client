@@ -7,15 +7,13 @@ export class TypedEmitter<
     }
   > = {};
 
-  public on<K extends keyof Events>(
-    ...[event, cb]:
-      | [event: K, cb: Events[K]]
-      | [
-          'message',
-          <E extends keyof Events>(
-            ...args: [event: E, ...params: Parameters<Events[E]>]
-          ) => void
-        ]
+  public on<K extends keyof Events | 'message'>(
+    event: K,
+    cb: K extends 'message'
+      ? <E extends keyof Events>(
+          ...args: [event: E, ...params: Parameters<Events[E]>]
+        ) => void
+      : Events[K]
   ) {
     this.listeners[event] = this.listeners[event] || (new Set() as any);
 
