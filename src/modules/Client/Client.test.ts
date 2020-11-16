@@ -64,7 +64,7 @@ describe('A Client', () => {
               sampleType: 'ok' | 'accepted';
             },
             url: (url, { sampleType }) => {
-              addPathToUrl(url, '/sample');
+              addPathToUrl(url, '/sample/' + sampleType);
               return url;
             },
             responses: [
@@ -82,7 +82,7 @@ describe('A Client', () => {
           }),
         },
       }),
-      test: new Resource({
+      extraResource: new Resource({
         operations: {
           getOk: new Operation({
             method: HttpMethod.GET,
@@ -124,8 +124,32 @@ describe('A Client', () => {
 
     test('Should return results correctly', async () => {
       const res = await API.samples.getOk();
+
+      expect(res.data).toEqual({
+        ok: true,
+      });
+      expectTypeOf(res.data).toMatchTypeOf({
+        ok: true,
+      });
+
+      expect(res.status).toBe(HttpStatus.OK);
+      expectTypeOf(res.status).toMatchTypeOf(HttpStatus.OK);
+
+      const res2 = await API.samples.getSample({
+        sampleType: 'ok',
+      });
+
+      if (res2.status === HttpStatus.OK) {
+        expectTypeOf(res2.data).toMatchTypeOf({
+          ok: true,
+        });
+      }
+
+      if (res2.status === HttpStatus.ACCEPTED) {
+        expectTypeOf(res2.data).toMatchTypeOf({
+          accepted: true,
+        });
+      }
     });
   });
 });
-
-type A = [unknown] extends [unknown] ? true : false;

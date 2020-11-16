@@ -6,36 +6,36 @@ import { ModelInterface } from '../Model/Model';
 import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
 
 export class Operation<
-  _Payload extends Model,
-  _Responses extends readonly [...ApiResponse<any, any>[]],
-  _Method extends HttpMethod,
-  _Options = never
+  Payload extends Model,
+  Responses extends [...ApiResponse<any, any>[]],
+  Method extends HttpMethod,
+  Options = never
 > {
-  public url!: (url: URL, options?: _Options) => URL;
-  public method!: _Method;
-  public payloadModel?: _Payload;
-  public responses!: _Responses;
-  public options?: _Options;
+  public url!: (url: URL, options?: Options) => URL;
+  public method!: Method;
+  public payloadModel?: Payload;
+  public readonly responses!: [...Responses];
+  public options?: Options;
 
-  public headers?: (options?: _Options) => Record<string, string>;
-  payloadConstructor?: (options?: _Options) => _Payload;
+  public headers?: (options?: Options) => Record<string, string>;
+  payloadConstructor?: (options?: Options) => Payload;
 
   public mock?: (
     path?: string,
-    payload?: _Payload
+    payload?: Payload
   ) => Partial<
     {
-      [key in keyof _Responses]: _Responses[key] extends ApiResponse<any, any>
+      [key in keyof Responses]: Responses[key] extends ApiResponse<any, any>
         ? ResponseWithStatus<
-            _Responses[key]['status'],
-            ModelInterface<_Responses[key]['model']>
+            Responses[key]['status'],
+            ModelInterface<Responses[key]['model']>
           >
-        : _Responses[key];
+        : Responses[key];
     }[number]
   >;
   constructor(
     config: Pick<
-      Operation<_Payload, _Responses, _Method, _Options>,
+      Operation<Payload, Responses, Method, Options>,
       | 'url'
       | 'method'
       | 'payloadModel'
@@ -54,19 +54,19 @@ export class Operation<
     url: baseUrl,
   }: {
     axios: AxiosInstance;
-    options?: _Options;
+    options?: Options;
     url: URL;
   }) {
     const payload = this.payloadConstructor?.(options);
     this.payloadModel?.validate(payload);
 
     type $Response = {
-      [key in keyof _Responses]: _Responses[key] extends ApiResponse<any, any>
+      [key in keyof Responses]: Responses[key] extends ApiResponse<any, any>
         ? ResponseWithStatus<
-            _Responses[key]['status'],
-            ModelInterface<_Responses[key]['model']>
+            Responses[key]['status'],
+            ModelInterface<Responses[key]['model']>
           >
-        : _Responses[key];
+        : Responses[key];
     }[number];
 
     if (this.mock) {

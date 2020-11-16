@@ -87,20 +87,18 @@ export class Client<
     > = _Resources[R]['operations'][O];
 
     type API = {
-      [$ResourceKey in keyof _Resources]: {
-        [$OperationKey in keyof ResourceOperations<$ResourceKey>]: (
-          ...args: Operation<$ResourceKey, $OperationKey>['options']
-        ) => {
-          [key in keyof Operation<
-            $ResourceKey,
-            $OperationKey
-          >['responses']]: Operation<
-            $ResourceKey,
-            $OperationKey
-          >['responses'][key] extends ApiResponse<infer M, infer S>
-            ? ResponseWithStatus<S, ModelInterface<M>>
-            : Operation<$ResourceKey, $OperationKey>['responses'][key];
-        }[number];
+      [R in keyof _Resources]: {
+        [O in keyof ResourceOperations<R>]: (
+          ...args: Operation<R, O>['options'] extends never
+            ? []
+            : [Operation<R, O>['options']]
+        ) => Operation<R, O>['responses'] extends [...infer R]
+          ? {
+              [key in keyof R]: R[key] extends ApiResponse<infer M, infer S>
+                ? ResponseWithStatus<S, ModelInterface<M>>
+                : R[key];
+            }[number]
+          : never;
       };
     };
 
