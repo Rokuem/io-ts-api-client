@@ -162,39 +162,12 @@ describe('A Client', () => {
           accepted: true,
         });
       }
+
+      if (res2.status === HttpStatus.INTERNAL_SERVER_ERROR) {
+        expectTypeOf(res2.data).toMatchTypeOf({
+          ok: false,
+        } as const);
+      }
     });
   });
 });
-
-const x = {
-  getOk: new Operation({
-    method: HttpMethod.GET,
-    url(url) {
-      addPathToUrl(url, '/sample/ok');
-      return url;
-    },
-    responses: [okSampleResponse],
-  }),
-  getSample: new Operation({
-    method: HttpMethod.GET,
-    options: {} as {
-      sampleType: 'ok' | 'accepted';
-    },
-    url: (url, options) => {
-      addPathToUrl(url, '/sample/' + options?.sampleType);
-      return url;
-    },
-    responses: [
-      okSampleResponse,
-      new ApiResponse({
-        status: HttpStatus.ACCEPTED,
-        model: new Model({
-          name: 'API sample resource',
-          model: t.interface({
-            accepted: t.boolean,
-          }),
-        }),
-      }),
-    ],
-  }),
-};

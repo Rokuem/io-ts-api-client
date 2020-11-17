@@ -28,7 +28,7 @@ import { ModelInterface } from '../Model/Model';
  */
 export class Client<
   _Resources extends Record<string, Resource<any>>,
-  _GlobalResponses extends ApiResponse<any, any>[] = []
+  GlobalResponses extends ApiResponse<any, any> = any
 > {
   /**
    * Axios instance this client should use.
@@ -65,7 +65,7 @@ export class Client<
     /**
      * Responses that might be returned in any operation.
      */
-    globalResponses?: _GlobalResponses;
+    readonly globalResponses?: [...GlobalResponses[]];
   }) {
     try {
       this.base = new URL(base);
@@ -93,11 +93,19 @@ export class Client<
             ? []
             : [Operation<R, O>['options']]
         ) => Operation<R, O>['responses'] extends [...infer R]
-          ? {
-              [key in keyof R]: R[key] extends ApiResponse<infer M, infer S>
-                ? ResponseWithStatus<S, ModelInterface<M>>
-                : R[key];
-            }[number]
+          ?
+              | {
+                  [key in keyof R]: R[key] extends ApiResponse<infer M, infer S>
+                    ? ResponseWithStatus<S, ModelInterface<M>>
+                    : R[key];
+                }[number]
+              | {
+                  [key in keyof [...GlobalResponses[]]]: [
+                    ...GlobalResponses[]
+                  ][key] extends ApiResponse<infer M, infer S>
+                    ? ResponseWithStatus<S, ModelInterface<M>>
+                    : [...GlobalResponses[]][key];
+                }[number]
           : never;
       };
     };
