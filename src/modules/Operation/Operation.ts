@@ -11,7 +11,7 @@ export class Operation<
   Method extends HttpMethod,
   Options = never
 > {
-  public url!: (url: URL, options?: Options) => URL;
+  public url!: (...args: [url: URL, options: Options]) => URL;
   public method!: Method;
   public payloadModel?: Payload;
   public readonly responses!: [...Responses];
@@ -75,7 +75,7 @@ export class Operation<
 
     const response = (await axios.request({
       data: this.payloadConstructor?.(options),
-      url: this.url(baseUrl, options).href,
+      url: (this.url as any)(baseUrl, options).href,
       headers: this.headers?.(options),
       validateStatus: (status) =>
         this.responses.some((res) => res.status === status),

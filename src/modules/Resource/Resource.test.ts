@@ -31,7 +31,7 @@ describe('A Resource', () => {
               }),
             }),
           }),
-        ] as const,
+        ],
       }),
     },
   });

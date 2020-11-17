@@ -47,6 +47,17 @@ describe('A Client', () => {
 
   const client = new Client({
     base: testConfig.testServerUrl,
+    globalResponses: [
+      new ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        model: new Model({
+          name: 'API 500 resource',
+          model: t.interface({
+            ok: t.literal(false),
+          }),
+        }),
+      }),
+    ],
     resources: {
       samples: new Resource({
         operations: {
@@ -113,12 +124,13 @@ describe('A Client', () => {
       expect(API.samples).toHaveProperty(operation);
       expectTypeOf(API.samples).toHaveProperty(operation);
 
-      expectTypeOf(API.samples.getSample).parameters.toMatchTypeOf([
-        {
-          sampleType: '' as 'ok' | 'accepted',
-        },
-      ] as const);
+      const expected = {
+        sampleType: '' as 'ok' | 'accepted',
+      } as const;
 
+      expectTypeOf(API.samples.getSample).parameters.toMatchTypeOf([
+        expected as typeof expected | undefined,
+      ]);
       expectTypeOf(API.samples.getOk).parameters.toMatchTypeOf([] as const);
     });
 
@@ -153,3 +165,36 @@ describe('A Client', () => {
     });
   });
 });
+
+const x = {
+  getOk: new Operation({
+    method: HttpMethod.GET,
+    url(url) {
+      addPathToUrl(url, '/sample/ok');
+      return url;
+    },
+    responses: [okSampleResponse],
+  }),
+  getSample: new Operation({
+    method: HttpMethod.GET,
+    options: {} as {
+      sampleType: 'ok' | 'accepted';
+    },
+    url: (url, options) => {
+      addPathToUrl(url, '/sample/' + options?.sampleType);
+      return url;
+    },
+    responses: [
+      okSampleResponse,
+      new ApiResponse({
+        status: HttpStatus.ACCEPTED,
+        model: new Model({
+          name: 'API sample resource',
+          model: t.interface({
+            accepted: t.boolean,
+          }),
+        }),
+      }),
+    ],
+  }),
+};

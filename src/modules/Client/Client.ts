@@ -89,7 +89,7 @@ export class Client<
     type API = {
       [R in keyof _Resources]: {
         [O in keyof ResourceOperations<R>]: (
-          ...args: Operation<R, O>['options'] extends never
+          ...args: Operation<R, O>['options'] extends undefined
             ? []
             : [Operation<R, O>['options']]
         ) => Operation<R, O>['responses'] extends [...infer R]
