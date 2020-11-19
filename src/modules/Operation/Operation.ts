@@ -73,7 +73,14 @@ export class Operation<
       return (this.mock() as unknown) as $Response;
     }
 
+    console.log(
+      'Request: ',
+      this.method,
+      (this.url as any)(baseUrl, options).href
+    );
+
     const response = (await axios.request({
+      method: this.method.toLocaleLowerCase() as any,
       data: this.payloadConstructor?.(options),
       url: (this.url as any)(baseUrl, options).href,
       headers: this.headers?.(options),

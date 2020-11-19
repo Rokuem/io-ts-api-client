@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Operation Can be created 1`] = `
+exports[`Operation Should match the snapshot 1`] = `
 Operation {
   "method": "GET",
-  "payload": Model {
+  "payloadModel": Model {
     "base": UndefinedType {
       "_tag": "UndefinedType",
       "decode": [Function],
@@ -15,7 +15,7 @@ Operation {
     "name": "operation payload",
   },
   "responses": Array [
-    Object {
+    ApiResponse {
       "model": Model {
         "base": UndefinedType {
           "_tag": "UndefinedType",
@@ -28,6 +28,44 @@ Operation {
         "name": "bad response",
       },
       "status": 200,
+    },
+    ApiResponse {
+      "model": Model {
+        "base": UndefinedType {
+          "_tag": "UndefinedType",
+          "decode": [Function],
+          "encode": [Function],
+          "is": [Function],
+          "name": "undefined",
+          "validate": [Function],
+        },
+        "name": "repeated response",
+      },
+      "status": 200,
+    },
+    ApiResponse {
+      "model": Model {
+        "base": InterfaceType {
+          "_tag": "InterfaceType",
+          "decode": [Function],
+          "encode": [Function],
+          "is": [Function],
+          "name": "{ ok: boolean }",
+          "props": Object {
+            "ok": BooleanType {
+              "_tag": "BooleanType",
+              "decode": [Function],
+              "encode": [Function],
+              "is": [Function],
+              "name": "boolean",
+              "validate": [Function],
+            },
+          },
+          "validate": [Function],
+        },
+        "name": "good response",
+      },
+      "status": 202,
     },
   ],
   "url": [Function],

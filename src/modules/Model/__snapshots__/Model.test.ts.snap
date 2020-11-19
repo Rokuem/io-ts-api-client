@@ -38,7 +38,7 @@ Array [
 
 exports[`A model When validating Should log success when the types match in debug mode: Validation Success Message 1`] = `
 Array [
-  "Target is a valid SUCCESS MESSAGE TEST MODEL!",
+  "SUCCESS: Target is a valid \\"SUCCESS MESSAGE TEST MODEL\\"!",
   Object {
     "target": Object {
       "foo": "bar",

@@ -27,7 +27,7 @@ import { ModelInterface } from '../Model/Model';
  *  }
  */
 export class Client<
-  _Resources extends Record<string, Resource<any>>,
+  Resources extends Record<string, Resource<any>>,
   GlobalResponses extends ApiResponse<any, any> = any
 > {
   /**
@@ -48,7 +48,7 @@ export class Client<
    *
    * Each resource can have more paths associated to it.
    */
-  private readonly resources: _Resources;
+  private readonly resources: Resources;
 
   constructor({
     base,
@@ -61,7 +61,7 @@ export class Client<
     /**
      * List of resources this url provides.
      */
-    resources: _Resources;
+    resources: Resources;
     /**
      * Responses that might be returned in any operation.
      */
@@ -79,15 +79,15 @@ export class Client<
 
   public getApi() {
     type ResourceOperations<
-      R extends keyof _Resources
-    > = _Resources[R]['operations'];
+      R extends keyof Resources
+    > = Resources[R]['operations'];
     type Operation<
-      R extends keyof _Resources,
+      R extends keyof Resources,
       O extends keyof ResourceOperations<R>
-    > = _Resources[R]['operations'][O];
+    > = Resources[R]['operations'][O];
 
     type API = {
-      [R in keyof _Resources]: {
+      [R in keyof Resources]: {
         [O in keyof ResourceOperations<R>]: (
           ...args: Operation<R, O>['options'] extends undefined
             ? []
@@ -96,42 +96,44 @@ export class Client<
           ?
               | {
                   [key in keyof R]: R[key] extends ApiResponse<infer M, infer S>
-                    ? ResponseWithStatus<S, ModelInterface<M>>
+                    ? Promise<ResponseWithStatus<S, ModelInterface<M>>>
                     : R[key];
                 }[number]
               | {
                   [key in keyof [...GlobalResponses[]]]: [
                     ...GlobalResponses[]
                   ][key] extends ApiResponse<infer M, infer S>
-                    ? ResponseWithStatus<S, ModelInterface<M>>
+                    ? Promise<ResponseWithStatus<S, ModelInterface<M>>>
                     : [...GlobalResponses[]][key];
                 }[number]
           : never;
       };
     };
+    return (mapObject(this.resources, (resourceName, resource) => {
+      return [
+        resourceName,
+        mapObject(resource.operations, (operationName) => [
+          operationName,
+          (options: any) => {
+            const operationUrl = new URL(this.base.href);
 
-    return mapObject(this.resources, (_resourceName, resource) => {
-      return mapObject(
-        resource.operations,
-        (operationName) => (options: any) => {
-          const operationUrl = new URL(this.base.href);
+            if (resource.basePath) {
+              addPathToUrl(operationUrl, resource.basePath);
+            }
 
-          if (resource.basePath) {
-            addPathToUrl(operationUrl, resource.basePath);
-          }
+            if (typeof operationName !== 'string') {
+              throw new Error('Operation names must be string');
+            }
 
-          if (typeof operationName !== 'string') {
-            throw new Error('Operation names must be string');
-          }
-
-          return resource.execute({
-            operation: operationName,
-            axios: this.axiosInstance,
-            options,
-            url: operationUrl,
-          });
-        }
-      );
-    }) as API;
+            return resource.execute({
+              operation: operationName,
+              axios: this.axiosInstance,
+              options,
+              url: operationUrl,
+            });
+          },
+        ]),
+      ];
+    }) as any) as API;
   }
 }

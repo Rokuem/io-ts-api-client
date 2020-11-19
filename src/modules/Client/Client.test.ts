@@ -1,6 +1,6 @@
+import mockAxios from 'jest-mock-axios';
 import { expectTypeOf } from 'expect-type';
 import { Client } from './Client';
-import { spawn, ChildProcess } from 'child_process';
 import { testConfig } from '../../../jest/config';
 import { Resource } from '../Resource/Resource';
 import { Operation } from '../Operation/Operation';
@@ -22,27 +22,8 @@ const okSampleResponse = new ApiResponse({
 });
 
 describe('A Client', () => {
-  let server: ChildProcess;
-
-  beforeAll(() => {
-    return new Promise<void>((resolve, reject) => {
-      server = spawn('yarn test:server', {
-        stdio: 'inherit',
-        shell: true,
-      });
-
-      server.on('message', (message) => {
-        if (message.toString().includes('listening')) {
-          return resolve();
-        }
-      });
-
-      server.on('error', reject);
-    });
-  });
-
-  afterAll(() => {
-    server.kill();
+  afterEach(() => {
+    mockAxios.reset();
   });
 
   const client = new Client({
@@ -135,7 +116,14 @@ describe('A Client', () => {
     });
 
     test('Should return results correctly', async () => {
-      const res = await API.samples.getOk();
+      const request = API.samples.getOk();
+      mockAxios.mockResponse({
+        data: {
+          ok: true,
+        },
+      });
+
+      const res = await request;
 
       expect(res.data).toEqual({
         ok: true,
@@ -147,9 +135,16 @@ describe('A Client', () => {
       expect(res.status).toBe(HttpStatus.OK);
       expectTypeOf(res.status).toMatchTypeOf(HttpStatus.OK);
 
-      const res2 = await API.samples.getSample({
+      const request2 = API.samples.getSample({
         sampleType: 'ok',
       });
+      mockAxios.mockResponse({
+        data: {
+          sampleType: 'ok',
+        },
+      });
+
+      const res2 = await request2;
 
       if (res2.status === HttpStatus.OK) {
         expectTypeOf(res2.data).toMatchTypeOf({

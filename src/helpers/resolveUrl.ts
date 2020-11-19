@@ -14,4 +14,6 @@ export function addPathToUrl(url: URL, ...additions: string[]) {
       }
     }
   }
+
+  url.pathname = url.pathname.replace(/\/\/+/gi, '/');
 }

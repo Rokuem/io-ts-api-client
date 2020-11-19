@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test:server": "ts-node jest server.ts"
+    "test:server": "ts-node jest/server.ts"
   },
   "dependencies": {
     "axios": "^0.21.0",
@@ -15,13 +15,16 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.8",
     "@types/express": "^4.17.9",
     "@types/jest": "^26.0.15",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "expect-type": "^0.9.0",
     "express": "^4.17.1",
     "jest": "^26.6.3",
     "jest-environment-node": "^26.6.2",
+    "jest-mock-axios": "^4.2.1",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",

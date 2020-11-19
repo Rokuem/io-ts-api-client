@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`A Resource Should match the snapshot: Simple Resource 1`] = `
+Resource {
+  "basePath": "",
+  "operations": Object {
+    "test": Operation {
+      "method": "GET",
+      "responses": Array [
+        ApiResponse {
+          "model": Model {
+            "base": InterfaceType {
+              "_tag": "InterfaceType",
+              "decode": [Function],
+              "encode": [Function],
+              "is": [Function],
+              "name": "{ a: string }",
+              "props": Object {
+                "a": StringType {
+                  "_tag": "StringType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "string",
+                  "validate": [Function],
+                },
+              },
+              "validate": [Function],
+            },
+            "name": "asd",
+          },
+          "status": 200,
+        },
+        ApiResponse {
+          "model": Model {
+            "base": InterfaceType {
+              "_tag": "InterfaceType",
+              "decode": [Function],
+              "encode": [Function],
+              "is": [Function],
+              "name": "{ b: string }",
+              "props": Object {
+                "b": StringType {
+                  "_tag": "StringType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "string",
+                  "validate": [Function],
+                },
+              },
+              "validate": [Function],
+            },
+            "name": "asd",
+          },
+          "status": 202,
+        },
+      ],
+      "url": [Function],
+    },
+  },
+}
+`;

@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`A Client Should match the snapshot: sample client 1`] = `
+Client {
+  "axiosInstance": [MockFunction],
+  "base": "http://localhost:8080/",
+  "resources": Object {
+    "extraResource": Resource {
+      "basePath": "",
+      "operations": Object {
+        "getOk": Operation {
+          "method": "GET",
+          "responses": Array [
+            ApiResponse {
+              "model": Model {
+                "base": InterfaceType {
+                  "_tag": "InterfaceType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "{ ok: boolean }",
+                  "props": Object {
+                    "ok": BooleanType {
+                      "_tag": "BooleanType",
+                      "decode": [Function],
+                      "encode": [Function],
+                      "is": [Function],
+                      "name": "boolean",
+                      "validate": [Function],
+                    },
+                  },
+                  "validate": [Function],
+                },
+                "name": "API sample resource",
+              },
+              "status": 200,
+            },
+          ],
+          "url": [Function],
+        },
+      },
+    },
+    "samples": Resource {
+      "basePath": "",
+      "operations": Object {
+        "getOk": Operation {
+          "method": "GET",
+          "responses": Array [
+            ApiResponse {
+              "model": Model {
+                "base": InterfaceType {
+                  "_tag": "InterfaceType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "{ ok: boolean }",
+                  "props": Object {
+                    "ok": BooleanType {
+                      "_tag": "BooleanType",
+                      "decode": [Function],
+                      "encode": [Function],
+                      "is": [Function],
+                      "name": "boolean",
+                      "validate": [Function],
+                    },
+                  },
+                  "validate": [Function],
+                },
+                "name": "API sample resource",
+              },
+              "status": 200,
+            },
+          ],
+          "url": [Function],
+        },
+        "getSample": Operation {
+          "method": "GET",
+          "options": Object {},
+          "responses": Array [
+            ApiResponse {
+              "model": Model {
+                "base": InterfaceType {
+                  "_tag": "InterfaceType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "{ ok: boolean }",
+                  "props": Object {
+                    "ok": BooleanType {
+                      "_tag": "BooleanType",
+                      "decode": [Function],
+                      "encode": [Function],
+                      "is": [Function],
+                      "name": "boolean",
+                      "validate": [Function],
+                    },
+                  },
+                  "validate": [Function],
+                },
+                "name": "API sample resource",
+              },
+              "status": 200,
+            },
+            ApiResponse {
+              "model": Model {
+                "base": InterfaceType {
+                  "_tag": "InterfaceType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "{ accepted: boolean }",
+                  "props": Object {
+                    "accepted": BooleanType {
+                      "_tag": "BooleanType",
+                      "decode": [Function],
+                      "encode": [Function],
+                      "is": [Function],
+                      "name": "boolean",
+                      "validate": [Function],
+                    },
+                  },
+                  "validate": [Function],
+                },
+                "name": "API sample resource",
+              },
+              "status": 202,
+            },
+          ],
+          "url": [Function],
+        },
+      },
+    },
+  },
+}
+`;
