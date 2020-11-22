@@ -9,8 +9,6 @@ import { ModelInterface } from '../Model/Model';
 /**
  * API client constructor. Use this to define a client then, use the `client.getApi()` to get the typesafe api.
  *
- * @warn You need to use 'as const' so types can be inferred properly.
- *
  * After declaring the resources you will be able to execute its operations with the client API.
  *
  * @example
@@ -27,13 +25,13 @@ import { ModelInterface } from '../Model/Model';
  *  }
  */
 export class Client<
-  Resources extends Record<string, Resource<any>>,
+  Resources extends Record<string, Resource<any, any>>,
   GlobalResponses extends ApiResponse<any, any> = any
 > {
   /**
    * Axios instance this client should use.
    *
-   * This will be created by default, but can be modified for more customization.
+   * This will be created by default, but can be modified.
    *
    * @default axios.create()
    */
@@ -50,9 +48,15 @@ export class Client<
    */
   private readonly resources: Resources;
 
+  /**
+   * Global responses that can be returned by the operations.
+   */
+  private globalResponses: [...GlobalResponses[]] = [];
+
   constructor({
     base,
     resources,
+    globalResponses,
   }: {
     /**
      * URL of the server that will be used as a base.
@@ -70,6 +74,7 @@ export class Client<
     try {
       this.base = new URL(base);
       this.resources = resources;
+      this.globalResponses = globalResponses || [];
     } catch (e) {
       throw new Error(
         'Could not create client. Provided base is an invalid URL: ' + base
@@ -77,6 +82,9 @@ export class Client<
     }
   }
 
+  /**
+   * Gets the typesafe client API for executing the operations.
+   */
   public getApi() {
     type ResourceOperations<
       R extends keyof Resources
@@ -109,7 +117,7 @@ export class Client<
           : never;
       };
     };
-    return (mapObject(this.resources, (resourceName, resource) => {
+    return mapObject(this.resources, (resourceName, resource) => {
       return [
         resourceName,
         mapObject(resource.operations, (operationName) => [
@@ -130,10 +138,11 @@ export class Client<
               axios: this.axiosInstance,
               options,
               url: operationUrl,
+              globalResponses: this.globalResponses,
             });
           },
         ]),
       ];
-    }) as any) as API;
+    }) as API;
   }
 }

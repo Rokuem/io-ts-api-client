@@ -24,6 +24,13 @@ const okSampleResponse = new ApiResponse({
 describe('A Client', () => {
   afterEach(() => {
     mockAxios.reset();
+    Model.strictTypes = false;
+    Model.throwErrors = false;
+  });
+
+  beforeAll(() => {
+    Model.strictTypes = true;
+    Model.throwErrors = true;
   });
 
   const client = new Client({
@@ -163,6 +170,23 @@ describe('A Client', () => {
           ok: false,
         } as const);
       }
+    });
+
+    test('Should accept global responses', async () => {
+      Model.strictTypes = true;
+      Model.throwErrors = true;
+
+      const request = API.samples.getOk();
+      const mockedRes = {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        data: {
+          ok: false,
+        },
+      };
+
+      mockAxios.mockResponse(mockedRes);
+
+      expect(request).resolves.toEqual(mockedRes);
     });
   });
 });

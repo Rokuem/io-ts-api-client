@@ -35,8 +35,16 @@ export default class Model<T extends t.Any = any> {
     'extra-keys-detected': (model: string, error: string) => void;
   }>();
 
+  /**
+   * a name to call the model during logs and errors.
+   */
   public name: string;
 
+  /**
+   * IO-TS interface used for the model.
+   *
+   * you can use tis to extend other interfaces.
+   */
   public base: T;
 
   public constructor(config: {
@@ -53,6 +61,9 @@ export default class Model<T extends t.Any = any> {
     this.base = config.model;
   }
 
+  /**
+   * Checks if there are any extra keys in the response received.
+   */
   private checkForExtraKeys(
     options: {
       result: Either<t.Errors, any>;
@@ -79,9 +90,11 @@ export default class Model<T extends t.Any = any> {
 
       if (filteredJson !== resultJson) {
         const diff = addedDiff(filtered, result.right);
-        const errorMessage = `Detected extra properties in model "${this.name.toUpperCase()}": ${Object.keys(
-          diff
-        ).join(', ')}`;
+        const errorMessage = `Detected extra properties in model "${this.name.toUpperCase()}": ${JSON.stringify(
+          diff,
+          null,
+          '  '
+        )}`;
 
         Model.emitter.emit('extra-keys-detected', this.name, errorMessage);
 
@@ -102,7 +115,7 @@ export default class Model<T extends t.Any = any> {
     const validationErrors = reporter.report(options.result);
 
     for (const error of validationErrors) {
-      const validationMessage = `VALIDATION FAILED FOR ${this.name.toUpperCase()}: ${error} at: \n ${JSON.stringify(
+      const validationMessage = `[${this.name.toUpperCase()}] VALIDATION FAILED: ${error} at: \n ${JSON.stringify(
         options.target,
         null,
         2
@@ -184,19 +197,3 @@ export default class Model<T extends t.Any = any> {
 }
 
 export type ModelInterface<T extends Model<any>> = TypeOf<T['base']>;
-
-const a = new Model({
-  name: 'Some model',
-  model: t.interface({
-    x: t.string,
-  }),
-});
-
-a.validate({
-  x: 'asd',
-});
-
-a.validate({
-  x: 'asd',
-  y: 'aaa',
-});
