@@ -29,7 +29,7 @@ exports[`A model When validating Should emit error when the types do not match: 
 
 exports[`A model When validating Should log error when the types do not match in debug mode: Validation Error Message 1`] = `
 Array [
-  "VALIDATION FAILED FOR ERROR MESSAGE TEST MODEL: Expecting \\"bar\\" at foo but instead got: \\"bob\\" at: 
+  "[ERROR MESSAGE TEST MODEL] VALIDATION FAILED: Expecting \\"bar\\" at foo but instead got: \\"bob\\" at: 
  {
   \\"foo\\": \\"bob\\"
 }",

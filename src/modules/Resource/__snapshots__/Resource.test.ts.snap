@@ -6,6 +6,7 @@ Resource {
   "operations": Object {
     "test": Operation {
       "method": "GET",
+      "name": "test",
       "responses": Array [
         ApiResponse {
           "model": Model {

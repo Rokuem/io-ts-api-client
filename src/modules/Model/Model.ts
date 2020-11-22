@@ -115,7 +115,7 @@ export default class Model<T extends t.Any = any> {
     const validationErrors = reporter.report(options.result);
 
     for (const error of validationErrors) {
-      const validationMessage = `[${this.name.toUpperCase()}] VALIDATION FAILED: ${error} at: \n ${JSON.stringify(
+      const validationMessage = `ERROR - [${this.name.toUpperCase()}] VALIDATION FAILED: ${error} at: \n ${JSON.stringify(
         options.target,
         null,
         2
@@ -138,7 +138,7 @@ export default class Model<T extends t.Any = any> {
 
   private handleValidResult(target: any, options: Pick<typeof Model, 'debug'>) {
     if (options.debug) {
-      console.log(`SUCCESS: Target is a valid "${this.name.toUpperCase()}"!`, {
+      console.log(`SUCCESS - [${this.name.toUpperCase()}]: Target is valid!`, {
         target,
       });
     }

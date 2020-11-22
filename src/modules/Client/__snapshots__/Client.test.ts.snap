@@ -4,12 +4,40 @@ exports[`A Client Should match the snapshot: sample client 1`] = `
 Client {
   "axiosInstance": [MockFunction],
   "base": "http://localhost:8080/",
+  "globalResponses": Array [
+    ApiResponse {
+      "model": Model {
+        "base": InterfaceType {
+          "_tag": "InterfaceType",
+          "decode": [Function],
+          "encode": [Function],
+          "is": [Function],
+          "name": "{ ok: false }",
+          "props": Object {
+            "ok": LiteralType {
+              "_tag": "LiteralType",
+              "decode": [Function],
+              "encode": [Function],
+              "is": [Function],
+              "name": "false",
+              "validate": [Function],
+              "value": false,
+            },
+          },
+          "validate": [Function],
+        },
+        "name": "API 500 resource",
+      },
+      "status": 500,
+    },
+  ],
   "resources": Object {
     "extraResource": Resource {
       "basePath": "",
       "operations": Object {
         "getOk": Operation {
           "method": "GET",
+          "name": "getOk",
           "responses": Array [
             ApiResponse {
               "model": Model {
@@ -45,6 +73,7 @@ Client {
       "operations": Object {
         "getOk": Operation {
           "method": "GET",
+          "name": "getOk",
           "responses": Array [
             ApiResponse {
               "model": Model {
@@ -75,6 +104,7 @@ Client {
         },
         "getSample": Operation {
           "method": "GET",
+          "name": "getSample",
           "options": Object {},
           "responses": Array [
             ApiResponse {
