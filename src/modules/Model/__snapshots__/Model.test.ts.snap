@@ -29,7 +29,7 @@ exports[`A model When validating Should emit error when the types do not match: 
 
 exports[`A model When validating Should log error when the types do not match in debug mode: Validation Error Message 1`] = `
 Array [
-  "[ERROR MESSAGE TEST MODEL] VALIDATION FAILED: Expecting \\"bar\\" at foo but instead got: \\"bob\\" at: 
+  "ERROR - [ERROR MESSAGE TEST MODEL] VALIDATION FAILED: Expecting \\"bar\\" at foo but instead got: \\"bob\\" at: 
  {
   \\"foo\\": \\"bob\\"
 }",
@@ -38,7 +38,7 @@ Array [
 
 exports[`A model When validating Should log success when the types match in debug mode: Validation Success Message 1`] = `
 Array [
-  "SUCCESS: Target is a valid \\"SUCCESS MESSAGE TEST MODEL\\"!",
+  "SUCCESS - [SUCCESS MESSAGE TEST MODEL]: Target is valid!",
   Object {
     "target": Object {
       "foo": "bar",
