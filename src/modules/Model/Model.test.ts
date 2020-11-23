@@ -28,7 +28,7 @@ describe('A model', () => {
       const cb = jest.fn();
       const model = new Model({
         name: testModelName,
-        model: t.literal('value'),
+        schema: t.literal('value'),
       });
 
       Model.emitter.on('validation-success', (name) => {
