@@ -13,7 +13,7 @@ describe('A model', () => {
     test('Should match the snapshot', () => {
       const model = new Model({
         name: 'snapshot model',
-        model: t.interface({
+        schema: t.interface({
           key: t.literal('value'),
         }),
       });
@@ -53,7 +53,7 @@ describe('A model', () => {
 
       const model = new Model({
         name: modelName,
-        model: t.interface({
+        schema: t.interface({
           foo: t.literal('bar'),
         }),
       });
@@ -86,7 +86,7 @@ describe('A model', () => {
 
       const model = new Model({
         name: modelName,
-        model: t.interface({
+        schema: t.interface({
           foo: t.literal('bar'),
         }),
       });
@@ -109,7 +109,7 @@ describe('A model', () => {
       const cb = jest.fn();
       const model = new Model({
         name: testModelName,
-        model: t.interface({
+        schema: t.interface({
           foo: t.literal('bar'),
         }),
       });
@@ -135,7 +135,7 @@ describe('A model', () => {
 
       const model = new Model({
         name: modelName,
-        model: t.interface({
+        schema: t.interface({
           [key]: t.literal(correctValue),
         }),
       });

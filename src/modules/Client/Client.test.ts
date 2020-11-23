@@ -15,7 +15,7 @@ const okSampleResponse = new ApiResponse({
   status: HttpStatus.OK,
   model: new Model({
     name: 'API sample resource',
-    model: t.interface({
+    schema: t.interface({
       ok: t.boolean,
     }),
   }),
@@ -40,7 +40,7 @@ describe('A Client', () => {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         model: new Model({
           name: 'API 500 resource',
-          model: t.interface({
+          schema: t.interface({
             ok: t.literal(false),
           }),
         }),
@@ -72,7 +72,7 @@ describe('A Client', () => {
                 status: HttpStatus.ACCEPTED,
                 model: new Model({
                   name: 'API sample resource',
-                  model: t.interface({
+                  schema: t.interface({
                     accepted: t.boolean,
                   }),
                 }),

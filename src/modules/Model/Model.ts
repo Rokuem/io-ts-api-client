@@ -9,7 +9,7 @@ import { addedDiff } from 'deep-object-diff';
  * Simple io-ts model with a validator. This is used to safeguard against API changes and to provide a easy solution for type checking it.
  *
  */
-export default class Model<T extends t.Any = any> {
+export default class Model<Base extends t.Any = any> {
   /**
    * If Extra fields can fail validation.
    */
@@ -45,7 +45,7 @@ export default class Model<T extends t.Any = any> {
    *
    * you can use tis to extend other interfaces.
    */
-  public base: T;
+  public base: Base;
 
   public constructor(config: {
     /**
@@ -55,10 +55,10 @@ export default class Model<T extends t.Any = any> {
     /**
      * The io-ts model.
      */
-    model: T;
+    schema: Base;
   }) {
     this.name = config.name;
-    this.base = config.model;
+    this.base = config.schema;
   }
 
   /**
@@ -104,6 +104,8 @@ export default class Model<T extends t.Any = any> {
           console.error(errorMessage);
         }
       }
+
+      return filtered;
     }
   }
 
@@ -151,11 +153,13 @@ export default class Model<T extends t.Any = any> {
    */
   public validate(
     target: any,
-    options?: Pick<typeof Model, 'strictTypes' | 'throwErrors' | 'debug'>
+    options?: Partial<
+      Pick<typeof Model, 'strictTypes' | 'throwErrors' | 'debug'>
+    >
   ) {
     Model.emitter.emit('before-validation', this.name);
 
-    const result = this.base.decode(target);
+    let result = this.base.decode(target);
     const isValid = isRight(result as any);
     const debug = Boolean(
       (Model.debug && options?.debug !== false) || options?.debug
@@ -166,12 +170,19 @@ export default class Model<T extends t.Any = any> {
     );
 
     if (Model.strictTypes) {
-      this.checkForExtraKeys({
+      const filtered = this.checkForExtraKeys({
         result,
         target,
         debug,
         throwErrors,
       });
+
+      if (filtered) {
+        result = {
+          ...result,
+          right: filtered,
+        } as any;
+      }
     }
 
     if (!isValid) {

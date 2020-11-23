@@ -17,7 +17,7 @@ describe('A Resource', () => {
             status: HttpStatus.OK,
             model: new Model({
               name: 'asd',
-              model: t.interface({
+              schema: t.interface({
                 a: t.string,
               }),
             }),
@@ -26,7 +26,7 @@ describe('A Resource', () => {
             status: HttpStatus.ACCEPTED,
             model: new Model({
               name: 'asd',
-              model: t.interface({
+              schema: t.interface({
                 b: t.string,
               }),
             }),

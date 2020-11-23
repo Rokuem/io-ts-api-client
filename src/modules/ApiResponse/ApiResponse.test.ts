@@ -9,7 +9,7 @@ describe('An API Response', () => {
     status: HttpStatus.ACCEPTED,
     model: new Model({
       name: 'API sample resource',
-      model: t.interface({
+      schema: t.interface({
         accepted: t.boolean,
       }),
     }),

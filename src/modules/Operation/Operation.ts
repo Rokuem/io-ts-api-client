@@ -170,7 +170,7 @@ export class Operation<
     if (matchingResponses.length > 1) {
       responseDeclaration = new ApiResponse({
         model: new Model({
-          model: t.intersection([
+          schema: t.intersection([
             ...matchingResponses.map((res) => res.model.base),
           ] as any),
           name: matchingResponses.map((res) => res.model.name).join(' | '),
@@ -188,6 +188,9 @@ export class Operation<
 
     responseDeclaration.model.validate((response as any).data);
 
-    return response;
+    return {
+      ...response,
+      body: (response as any).data,
+    };
   }
 }

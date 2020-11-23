@@ -11,27 +11,27 @@ const operation = new Operation({
   method: HttpMethod.GET,
   payloadModel: new Model({
     name: 'operation payload',
-    model: t.undefined,
+    schema: t.undefined,
   }),
   responses: [
     new ApiResponse({
       model: new Model({
         name: 'bad response',
-        model: t.undefined,
+        schema: t.undefined,
       }),
       status: HttpStatus.OK,
     }),
     new ApiResponse({
       model: new Model({
         name: 'repeated response',
-        model: t.undefined,
+        schema: t.undefined,
       }),
       status: HttpStatus.OK,
     }),
     new ApiResponse({
       model: new Model({
         name: 'good response',
-        model: t.interface({
+        schema: t.interface({
           ok: t.boolean,
         }),
       }),
