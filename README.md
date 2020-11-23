@@ -13,7 +13,7 @@ npm install io-ts-api-client -S
 OR
 
 ```bash
-yarn add io-ts-api-client -S
+yarn add io-ts-api-client
 ```
 
 then, create a client in a folder of your preference:
