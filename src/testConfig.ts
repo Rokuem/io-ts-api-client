@@ -8,7 +8,7 @@ class TestConfig {
    */
   public TEST_SERVER_PORT = process.env.TEST_SERVER_PORT || '8080';
   /**
-   * Host of the test server
+   * Host of the test server.
    *
    * @default 'localhost'
    */

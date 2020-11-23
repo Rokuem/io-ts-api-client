@@ -1,7 +1,7 @@
 import mockAxios from 'jest-mock-axios';
 import { expectTypeOf } from 'expect-type';
 import { Client } from './Client';
-import { testConfig } from '../../../jest/config';
+import { testConfig } from '../../testConfig';
 import { Resource } from '../Resource/Resource';
 import { Operation } from '../Operation/Operation';
 import { HttpMethod } from '../../constants/httpMethod';
@@ -186,7 +186,7 @@ describe('A Client', () => {
 
       mockAxios.mockResponse(mockedRes);
 
-      expect(request).resolves.toEqual(mockedRes);
+      expect(await request).toEqual(expect.objectContaining(mockedRes));
     });
   });
 });

@@ -1,10 +1,14 @@
 {
   "name": "io-ts-api-client",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.5.0",
+  "main": "dist/main.js",
   "license": "MIT",
+  "description": "An API client constructor with runtime validation based on io-ts. A nice solution to making sure the data you receive matches the typescript interfaces.",
+  "types": "dist/main.d.ts",
   "scripts": {
-    "test:server": "ts-node jest/server.ts"
+    "test": "jest",
+    "prepublish": "yarn build",
+    "build": "yarn ts-node scripts/build.ts"
   },
   "dependencies": {
     "axios": "^0.21.0",
@@ -27,6 +31,7 @@
     "jest-mock-axios": "^4.2.1",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
+    "tslib": "^2.0.3",
     "typescript": "^4.0.5",
     "vue-jest": "^3.0.7"
   }
