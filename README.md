@@ -7,13 +7,13 @@ This module exposes a Client class used for proving a typesafe way to communicat
 First, install the module:
 
 ```bash
-npm install git@github.com:Rokuem/io-ts-api-client.git -S
+npm install io-ts-api-client -S
 ```
 
 OR
 
 ```bash
-yarn add git@github.com:Rokuem/io-ts-api-client.git -S
+yarn add io-ts-api-client -S
 ```
 
 then, create a client in a folder of your preference:
@@ -171,3 +171,10 @@ The Model.emitter is a type safe event emitter with some events you can listen t
 ## Operation
 
 The operation is a description of a request. It has some features associated with it. You can construct payload, perform mocks, set headers, define options, and others. I recommended taking a look at the type signature of it.
+
+# TODO
+
+- Improve types.
+- Improve tests.
+- Add common responses by default. (maybe)
+- Improve and add events.

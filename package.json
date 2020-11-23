@@ -10,6 +10,9 @@
     "prepublish": "yarn build",
     "build": "yarn ts-node scripts/build.ts"
   },
+  "repository": {
+    "url": "https://github.com/Rokuem/io-ts-api-client"
+  },
   "dependencies": {
     "axios": "^0.21.0",
     "deep-object-diff": "^1.1.0",
