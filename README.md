@@ -1,6 +1,8 @@
 # About
 
-This module exposes a Client class used for proving a typesafe way to communicate to an API, with runtime validation to also provide confidence on the interfaces you are using.
+This is still in beta. Some functionalities may not be working properly yet. If you happened to like this module, I would recommend waiting for version 1.
+
+This module exposes a Client class used for proving a typesafe way to communicate to an API, with runtime validation to also provide confidence on the interfaces you are using
 
 # Getting started
 

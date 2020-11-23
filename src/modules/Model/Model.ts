@@ -9,7 +9,7 @@ import { addedDiff } from 'deep-object-diff';
  * Simple io-ts model with a validator. This is used to safeguard against API changes and to provide a easy solution for type checking it.
  *
  */
-export default class Model<Base extends t.Any = any> {
+export class Model<Base extends t.Any = any> {
   /**
    * If Extra fields can fail validation.
    */

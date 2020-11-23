@@ -9,7 +9,7 @@ import { addPathToUrl } from '../../helpers/resolveUrl';
 import { ApiResponse } from '../ApiResponse/ApiResponse';
 import { HttpStatus } from '../../constants/HttpStatus';
 import { t } from '../t/t';
-import Model from '../Model/Model';
+import { Model } from '../Model/Model';
 
 const okSampleResponse = new ApiResponse({
   status: HttpStatus.OK,

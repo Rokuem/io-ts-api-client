@@ -1,7 +1,7 @@
 import { Operation } from './Operation';
 import { HttpMethod } from '../../constants/httpMethod';
 import { t } from '../t/t';
-import Model from '../Model/Model';
+import { Model } from '../Model/Model';
 import { HttpStatus } from '../../constants/HttpStatus';
 import { expectTypeOf } from 'expect-type';
 import { ApiResponse } from '../ApiResponse/ApiResponse';

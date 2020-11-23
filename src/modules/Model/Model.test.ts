@@ -1,4 +1,4 @@
-import Model from './Model';
+import { Model } from './Model';
 import { t } from '../t/t';
 
 describe('A model', () => {

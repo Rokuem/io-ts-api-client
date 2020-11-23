@@ -4,7 +4,7 @@ import { Operation } from '../Operation/Operation';
 import { Resource } from './Resource';
 import { HttpStatus } from '../../constants/HttpStatus';
 import { t } from '../t/t';
-import Model from '../Model/Model';
+import { Model } from '../Model/Model';
 
 describe('A Resource', () => {
   const resource = new Resource({

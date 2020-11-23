@@ -1,6 +1,6 @@
 import { expectTypeOf } from 'expect-type';
 import { HttpStatus } from '../../constants/HttpStatus';
-import Model from '../Model/Model';
+import { Model } from '../Model/Model';
 import { t } from '../t/t';
 import { ApiResponse } from './ApiResponse';
 

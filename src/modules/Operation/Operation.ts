@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { HttpMethod } from '../../constants/httpMethod';
 import { ApiResponse } from '../ApiResponse/ApiResponse';
-import Model from '../Model/Model';
+import { Model } from '../Model/Model';
 import { ModelInterface } from '../Model/Model';
 import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
 import { t } from '../t/t';
