@@ -26,7 +26,7 @@ import { ModelInterface } from '../Model/Model';
  */
 export class Client<
   Resources extends Record<string, Resource<any, any>>,
-  GlobalResponses extends ApiResponse<any, any> = any
+  GlobalResponses extends ApiResponse<any, any> = ApiResponse<never, never>
 > {
   /**
    * Axios instance this client should use.
@@ -117,9 +117,11 @@ export class Client<
       [ResourceKey in keyof Resources]: {
         [OperationKey in keyof ResourceOperations<ResourceKey>]: (
           ...args: OperationOptions<ResourceKey, OperationKey>
-        ) =>
-          | MapResponses<Operation<ResourceKey, OperationKey>['responses']>
-          | MapResponses<[...GlobalResponses[]]>;
+        ) => GlobalResponses extends ApiResponse<never, never>
+          ? MapResponses<Operation<ResourceKey, OperationKey>['responses']>
+          :
+              | MapResponses<Operation<ResourceKey, OperationKey>['responses']>
+              | MapResponses<[...GlobalResponses[]]>;
       };
     };
     return mapObject(this.resources, (resourceName, resource) => {

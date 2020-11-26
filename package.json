@@ -48,9 +48,9 @@
     "vue-jest": "^3.0.7"
   },
   "peerDependencies": {
-    "tslib": "2.x",
-    "io-ts": "2.x",
+    "axios": "0.x",
     "fp-ts": "2.x",
-    "axios": "0.x"
+    "io-ts": "2.x",
+    "tslib": "2.x"
   }
 }
