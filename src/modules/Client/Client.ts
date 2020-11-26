@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Resource } from '../Resource/Resource';
 import { mapObject } from '../../helpers/mapObject';
-import { addPathToUrl } from '../../helpers/resolveUrl';
 import { ApiResponse } from '../ApiResponse/ApiResponse';
 import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
 import { ModelInterface } from '../Model/Model';
