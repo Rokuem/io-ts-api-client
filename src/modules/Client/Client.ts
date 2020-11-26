@@ -130,10 +130,6 @@ export class Client<
           (options: any) => {
             const operationUrl = new URL(this.base.href);
 
-            if (resource.basePath) {
-              addPathToUrl(operationUrl, resource.basePath);
-            }
-
             if (typeof operationName !== 'string') {
               throw new Error('Operation names must be string');
             }
