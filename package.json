@@ -1,6 +1,6 @@
 {
   "name": "io-ts-api-client",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "main": "dist/main.js",
   "license": "MIT",
   "description": "An API client constructor with runtime validation based on io-ts. A nice solution to making sure the data you receive matches the typescript interfaces.",
