@@ -1,7 +1,6 @@
 import * as t from 'io-ts';
 import reporter from 'io-ts-reporters';
 import { Either, isRight } from 'fp-ts/lib/Either';
-import { TypeOf } from 'io-ts';
 import { TypedEmitter } from '../TypedEmitter/TypedEmmiter';
 import { addedDiff } from 'deep-object-diff';
 
@@ -207,4 +206,4 @@ export class Model<Base extends t.Any = any> {
   }
 }
 
-export type ModelInterface<T extends Model<any>> = TypeOf<T['base']>;
+export type ModelInterface<T extends Model<any>> = t.TypeOf<T['base']>;
