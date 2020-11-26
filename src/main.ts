@@ -5,4 +5,4 @@ export { ApiResponse } from './modules/ApiResponse/ApiResponse';
 export { Client } from './modules/Client/Client';
 export { Operation } from './modules/Operation/Operation';
 export { Resource } from './modules/Resource/Resource';
-export { Model } from './modules/Model/Model';
+export { Model, ModelInterface } from './modules/Model/Model';
