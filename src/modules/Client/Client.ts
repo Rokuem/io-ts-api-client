@@ -87,34 +87,39 @@ export class Client<
    */
   public getApi() {
     type ResourceOperations<
-      R extends keyof Resources
-    > = Resources[R]['operations'];
+      ResourceKey extends keyof Resources
+    > = Resources[ResourceKey]['operations'];
+
     type Operation<
-      R extends keyof Resources,
-      O extends keyof ResourceOperations<R>
-    > = Resources[R]['operations'][O];
+      ResourceKey extends keyof Resources,
+      ResourceOperation extends keyof ResourceOperations<ResourceKey>
+    > = Resources[ResourceKey]['operations'][ResourceOperation];
+
+    type OperationOptions<
+      ResourceKey extends keyof Resources,
+      OperationKey extends keyof ResourceOperations<ResourceKey>
+    > = Operation<ResourceKey, OperationKey>['options'] extends undefined
+      ? []
+      : [Operation<ResourceKey, OperationKey>['options']];
+
+    type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
+      [key in keyof Responses]: Responses[key] extends ApiResponse<
+        infer ResponseModel,
+        infer ResponseStatus
+      >
+        ? Promise<
+            ResponseWithStatus<ResponseStatus, ModelInterface<ResponseModel>>
+          >
+        : never;
+    }[number];
 
     type API = {
-      [R in keyof Resources]: {
-        [O in keyof ResourceOperations<R>]: (
-          ...args: Operation<R, O>['options'] extends undefined
-            ? []
-            : [Operation<R, O>['options']]
-        ) => Operation<R, O>['responses'] extends [...infer R]
-          ?
-              | {
-                  [key in keyof R]: R[key] extends ApiResponse<infer M, infer S>
-                    ? Promise<ResponseWithStatus<S, ModelInterface<M>>>
-                    : R[key];
-                }[number]
-              | {
-                  [key in keyof [...GlobalResponses[]]]: [
-                    ...GlobalResponses[]
-                  ][key] extends ApiResponse<infer M, infer S>
-                    ? Promise<ResponseWithStatus<S, ModelInterface<M>>>
-                    : [...GlobalResponses[]][key];
-                }[number]
-          : never;
+      [ResourceKey in keyof Resources]: {
+        [OperationKey in keyof ResourceOperations<ResourceKey>]: (
+          ...args: OperationOptions<ResourceKey, OperationKey>
+        ) =>
+          | MapResponses<Operation<ResourceKey, OperationKey>['responses']>
+          | MapResponses<[...GlobalResponses[]]>;
       };
     };
     return mapObject(this.resources, (resourceName, resource) => {

@@ -29,7 +29,7 @@ export class Operation<
   /**
    * function to construct the url of the operation.
    *
-   * @param ulr - The base URL object of the api.
+   * @param url - The base URL object of the api.
    * @param options - The options of the operation.
    */
   public url!: (...args: [url: URL, options: Options]) => URL;
