@@ -6,6 +6,15 @@ import { ApiResponse } from '../ApiResponse/ApiResponse';
 import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
 import { ModelInterface } from '../Model/Model';
 
+export type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
+  [key in keyof Responses]: Responses[key] extends ApiResponse<
+    infer ResponseModel,
+    infer ResponseStatus
+  >
+    ? Promise<ResponseWithStatus<ResponseStatus, ModelInterface<ResponseModel>>>
+    : never;
+}[number];
+
 /**
  * API client constructor. Use this to define a client then, use the `client.getApi()` to get the typesafe api.
  *
@@ -101,17 +110,6 @@ export class Client<
     > = Operation<ResourceKey, OperationKey>['options'] extends undefined
       ? []
       : [Operation<ResourceKey, OperationKey>['options']];
-
-    type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
-      [key in keyof Responses]: Responses[key] extends ApiResponse<
-        infer ResponseModel,
-        infer ResponseStatus
-      >
-        ? Promise<
-            ResponseWithStatus<ResponseStatus, ModelInterface<ResponseModel>>
-          >
-        : never;
-    }[number];
 
     type API = {
       [ResourceKey in keyof Resources]: {
