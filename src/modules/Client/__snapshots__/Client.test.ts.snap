@@ -2,8 +2,13 @@
 
 exports[`A Client Should match the snapshot: sample client 1`] = `
 Client {
-  "axiosInstance": [MockFunction],
+  "axiosInstance": Object {
+    "create": [Function],
+    "nextResponse": Object {},
+    "request": [Function],
+  },
   "base": "http://localhost:8080/",
+  "debug": false,
   "globalResponses": Array [
     ApiResponse {
       "model": Model {
@@ -27,6 +32,7 @@ Client {
           "validate": [Function],
         },
         "name": "API 500 resource",
+        "operation": "",
       },
       "status": 500,
     },
@@ -60,6 +66,7 @@ Client {
                   "validate": [Function],
                 },
                 "name": "API sample resource",
+                "operation": "getOk",
               },
               "status": 200,
             },
@@ -96,6 +103,7 @@ Client {
                   "validate": [Function],
                 },
                 "name": "API sample resource",
+                "operation": "getOk",
               },
               "status": 200,
             },
@@ -128,6 +136,7 @@ Client {
                   "validate": [Function],
                 },
                 "name": "API sample resource",
+                "operation": "getOk",
               },
               "status": 200,
             },
@@ -152,8 +161,42 @@ Client {
                   "validate": [Function],
                 },
                 "name": "API sample resource",
+                "operation": "getSample",
               },
               "status": 202,
+            },
+          ],
+          "url": [Function],
+        },
+        "withMock": Operation {
+          "method": "GET",
+          "mock": [Function],
+          "name": "withMock",
+          "responses": Array [
+            ApiResponse {
+              "model": Model {
+                "base": InterfaceType {
+                  "_tag": "InterfaceType",
+                  "decode": [Function],
+                  "encode": [Function],
+                  "is": [Function],
+                  "name": "{ ok: boolean }",
+                  "props": Object {
+                    "ok": BooleanType {
+                      "_tag": "BooleanType",
+                      "decode": [Function],
+                      "encode": [Function],
+                      "is": [Function],
+                      "name": "boolean",
+                      "validate": [Function],
+                    },
+                  },
+                  "validate": [Function],
+                },
+                "name": "API sample resource",
+                "operation": "getOk",
+              },
+              "status": 200,
             },
           ],
           "url": [Function],
@@ -161,5 +204,7 @@ Client {
       },
     },
   },
+  "strictTypes": false,
+  "throwErrors": false,
 }
 `;

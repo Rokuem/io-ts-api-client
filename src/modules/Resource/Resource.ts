@@ -1,7 +1,8 @@
-import { AxiosInstance } from 'axios';
 import { Operation } from '../Operation/Operation';
 import { addPathToUrl } from '../../helpers/resolveUrl';
 import { ApiResponse } from '../ApiResponse/ApiResponse';
+import type { Client } from '../Client/Client';
+import { ValidationOptions } from '../types';
 
 /**
  * A resource is a base of the API. It contains operations that will execute using it as a base.
@@ -35,37 +36,37 @@ export class Resource<
   private assignOperationNames() {
     for (const key in this.operations) {
       const operation = this.operations[key];
-      operation.name = key;
+      operation.setName(key);
     }
   }
 
   /**
    * Executes an operation inside a resource.
    */
-  public execute<K extends keyof Operations>({
-    options,
-    axios,
-    url,
-    operation,
-    globalResponses,
-  }: {
-    operation: K;
-    url: URL;
-    axios: AxiosInstance;
-    options: Operations[K]['options'];
-    globalResponses: [...GlobalResponses[]];
-  }) {
-    const resourceUrl = new URL(url.href);
+  public execute<K extends keyof Operations>(
+    options: Pick<
+      Client<
+        Record<string, Resource<Operations, GlobalResponses>>,
+        GlobalResponses
+      >,
+      'base' | 'globalResponses' | 'axiosInstance'
+    > &
+      Pick<Operations[K], 'options'> & {
+        operation: K;
+      } & ValidationOptions
+  ) {
+    const resourceUrl = new URL(options.base.href);
 
     if (this.basePath) {
       addPathToUrl(resourceUrl, this.basePath);
     }
 
-    return (this.operations[operation] as Operation<any, any, any>).execute({
-      options: options as any,
-      axios,
-      url: resourceUrl,
-      globalResponses,
-    }) as ReturnType<Operations[K]['execute']>;
+    const operation = this.operations[options.operation];
+
+    if (!(operation instanceof Operation)) {
+      throw new Error('Invalid operation: ' + options.operation);
+    }
+
+    return operation.execute(options) as ReturnType<Operations[K]['execute']>;
   }
 }

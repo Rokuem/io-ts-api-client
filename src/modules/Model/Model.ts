@@ -10,20 +10,6 @@ import { addedDiff } from 'deep-object-diff';
  */
 export class Model<Base extends t.Any = any> {
   /**
-   * If Extra fields can fail validation.
-   */
-  public static strictTypes = false;
-
-  /**
-   * if validation errors should throw an exception.
-   */
-  public static throwErrors = false;
-  /**
-   * If the validation results should be logged into the console.
-   */
-  public static debug = false;
-
-  /**
    * Emitter for modal events.
    */
   public static emitter = new TypedEmitter<{
@@ -61,14 +47,19 @@ export class Model<Base extends t.Any = any> {
   }
 
   /**
+   * If not an empty string, this model belongs to an operation.
+   */
+  public operation = '';
+
+  /**
    * Checks if there are any extra keys in the response received.
    */
-  private checkForExtraKeys(
-    options: {
-      result: Either<t.Errors, any>;
-      target: any;
-    } & Pick<typeof Model, 'throwErrors' | 'debug'>
-  ) {
+  private checkForExtraKeys(options: {
+    result: Either<t.Errors, any>;
+    target: any;
+    debug: boolean;
+    throwErrors: boolean;
+  }) {
     const { result, target } = options;
 
     if (!('right' in result) && options.debug) {
@@ -89,7 +80,9 @@ export class Model<Base extends t.Any = any> {
 
       if (filteredJson !== resultJson) {
         const diff = addedDiff(filtered, result.right);
-        const errorMessage = `Detected extra properties in model "${this.name.toUpperCase()}": ${JSON.stringify(
+        const errorMessage = `${
+          this.operation ? `[${this.operation}] ` : ''
+        }Detected extra properties in model "${this.name}": ${JSON.stringify(
           diff,
           null,
           '  '
@@ -108,15 +101,18 @@ export class Model<Base extends t.Any = any> {
     }
   }
 
-  private handleInvalidResult(
-    options: { result: Either<t.Errors, any>; target: any } & Partial<
-      Pick<typeof Model, 'throwErrors' | 'debug'>
-    >
-  ) {
+  private handleInvalidResult(options: {
+    result: Either<t.Errors, any>;
+    target: any;
+    throwErrors: boolean;
+    debug: boolean;
+  }) {
     const validationErrors = reporter.report(options.result);
 
     for (const error of validationErrors) {
-      const validationMessage = `ERROR - [${this.name.toUpperCase()}] VALIDATION FAILED: ${error} at: \n ${JSON.stringify(
+      const validationMessage = `ERROR - ${
+        this.operation ? `[${this.operation}]` : ''
+      }[${this.name}] VALIDATION FAILED: ${error} at: \n ${JSON.stringify(
         options.target,
         null,
         2
@@ -124,24 +120,31 @@ export class Model<Base extends t.Any = any> {
 
       Model.emitter.emit('validation-error', this.name, error);
 
-      if ((Model.debug && options.debug !== false) || options.debug) {
+      if (options.debug) {
         console.error(validationMessage);
       }
 
-      if (
-        (Model.throwErrors && options.throwErrors !== false) ||
-        options.throwErrors
-      ) {
+      if (options.throwErrors) {
         throw new Error(validationMessage);
       }
     }
   }
 
-  private handleValidResult(target: any, options: Pick<typeof Model, 'debug'>) {
+  private handleValidResult(
+    target: any,
+    options: {
+      debug: boolean;
+    }
+  ) {
     if (options.debug) {
-      console.log(`SUCCESS - [${this.name.toUpperCase()}]: Target is valid!`, {
-        target,
-      });
+      console.log(
+        `SUCCESS - ${this.operation ? `[${this.operation}]` : ''}[${
+          this.name
+        }]: Target is valid!`,
+        {
+          target,
+        }
+      );
     }
 
     Model.emitter.emit('validation-success', this.name);
@@ -152,28 +155,23 @@ export class Model<Base extends t.Any = any> {
    */
   public validate(
     target: any,
-    options?: Partial<
-      Pick<typeof Model, 'strictTypes' | 'throwErrors' | 'debug'>
-    >
+    options: {
+      strictTypes: boolean;
+      throwErrors: boolean;
+      debug: boolean;
+    }
   ) {
     Model.emitter.emit('before-validation', this.name);
 
     let result = this.base.decode(target);
     const isValid = isRight(result as any);
-    const debug = Boolean(
-      (Model.debug && options?.debug !== false) || options?.debug
-    );
-    const throwErrors = Boolean(
-      (Model.throwErrors && options?.throwErrors !== false) ||
-        options?.throwErrors
-    );
 
-    if (Model.strictTypes) {
+    if (options.strictTypes) {
       const filtered = this.checkForExtraKeys({
         result,
         target,
-        debug,
-        throwErrors,
+        debug: options.debug,
+        throwErrors: options.throwErrors,
       });
 
       if (filtered) {
@@ -189,15 +187,15 @@ export class Model<Base extends t.Any = any> {
         this.handleInvalidResult({
           target,
           result,
-          debug,
-          throwErrors,
+          debug: Boolean(options.debug),
+          throwErrors: Boolean(options.throwErrors),
         });
       } catch (e) {
         Model.emitter.emit('after-validation', this.name);
         throw e;
       }
     } else {
-      this.handleValidResult(target, { debug });
+      this.handleValidResult(target, { debug: Boolean(options.debug) });
     }
 
     Model.emitter.emit('after-validation', this.name);

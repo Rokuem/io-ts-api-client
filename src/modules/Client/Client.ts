@@ -4,6 +4,7 @@ import { mapObject } from '../../helpers/mapObject';
 import { ApiResponse } from '../ApiResponse/ApiResponse';
 import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
 import { ModelInterface } from '../Model/Model';
+import { ValidationOptions } from '../types';
 
 export type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
   [key in keyof Responses]: Responses[key] extends ApiResponse<
@@ -35,11 +36,14 @@ export type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
 export class Client<
   Resources extends Record<string, Resource<any, any>>,
   GlobalResponses extends ApiResponse<any, any> = ApiResponse<never, never>
-> {
+> implements ValidationOptions {
+  public debug = false;
+  public strictTypes = false;
+  public throwErrors = false;
   /**
    * Axios instance this client should use.
    *
-   * This will be created by default, but can be modified.
+   * This will be created by default, but can be replaced at will.
    *
    * @default axios.create()
    */
@@ -47,47 +51,34 @@ export class Client<
   /**
    * URL object based on the client base url.
    */
-  public base: URL;
+
+  /**
+   * URL of the server that will be used as a base. Needs to be valid.
+   */
+  public base!: URL;
 
   /**
    * List of resources provided by the base url of the API.
    *
    * Each resource can have more paths associated to it.
    */
-  private readonly resources: Resources;
+  public readonly resources!: Resources;
 
   /**
    * Global responses that can be returned by the operations.
+   *
+   * Strongly recommended to add 500 and 404 errors here for example.
    */
-  private globalResponses: [...GlobalResponses[]] = [];
+  public globalResponses: [...GlobalResponses[]] = [];
 
-  constructor({
-    base,
-    resources,
-    globalResponses,
-  }: {
-    /**
-     * URL of the server that will be used as a base.
-     */
-    base: string;
-    /**
-     * List of resources this url provides.
-     */
-    resources: Resources;
-    /**
-     * Responses that might be returned in any operation.
-     */
-    readonly globalResponses?: [...GlobalResponses[]];
-  }) {
-    try {
-      this.base = new URL(base);
-      this.resources = resources;
-      this.globalResponses = globalResponses || [];
-    } catch (e) {
-      throw new Error(
-        'Could not create client. Provided base is an invalid URL: ' + base
-      );
-    }
+  constructor(
+    options: Pick<
+      Client<Resources, GlobalResponses>,
+      'base' | 'globalResponses' | 'resources'
+    > &
+      Partial<ValidationOptions>
+  ) {
+    Object.assign(this, options);
   }
 
   /**
@@ -135,10 +126,13 @@ export class Client<
 
             return resource.execute({
               operation: operationName,
-              axios: this.axiosInstance,
+              axiosInstance: this.axiosInstance,
               options,
-              url: operationUrl,
+              base: operationUrl,
               globalResponses: this.globalResponses,
+              debug: this.debug,
+              strictTypes: this.strictTypes,
+              throwErrors: this.throwErrors,
             });
           },
         ]),

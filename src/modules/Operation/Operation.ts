@@ -1,10 +1,13 @@
-import { AxiosInstance } from 'axios';
+import { AxiosError } from 'axios';
 import { HttpMethod } from '../../constants/httpMethod';
 import { ApiResponse } from '../ApiResponse/ApiResponse';
 import { Model } from '../Model/Model';
 import { ModelInterface } from '../Model/Model';
 import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
 import { t } from '../t/t';
+import { Client } from '../Client/Client';
+import { Resource } from '../Resource/Resource';
+import { ValidationOptions } from '../types';
 
 /**
  * Operations describes a request.
@@ -17,11 +20,6 @@ export class Operation<
   Method extends HttpMethod,
   Options = never
 > {
-  /**
-   * If true, operations will log what they are doing.
-   */
-  public static debug = false;
-
   /**
    * Name of the operation. Infered when the client is made.
    */
@@ -95,9 +93,17 @@ export class Operation<
     Object.assign(this, config);
   }
 
-  private log(...message: any[]) {
-    if (Operation.debug) {
-      console.log(`[${this.name}] `, ...message);
+  public setName(name: string) {
+    this.name = name;
+
+    for (const response of this.responses) {
+      if (response.model instanceof Model) {
+        response.model.operation = this.name;
+      }
+    }
+
+    if (this.payloadModel) {
+      this.payloadModel.operation = this.name;
     }
   }
 
@@ -105,32 +111,42 @@ export class Operation<
    * Executes the operation using the provided configuration.
    */
   public async execute<GlobalResponses extends ApiResponse<any, any>>({
-    axios,
+    axiosInstance,
     options,
-    url: baseUrl,
+    base,
     globalResponses,
-  }: {
-    /**
-     * Axios instance that will perform the request.
-     */
-    axios: AxiosInstance;
-    /**
-     * Options of the operation.
-     */
-    options?: Options;
-    /**
-     * URL to use as an base for the operation.
-     */
-    url: URL;
-    /**
-     * List of global responses that can also happen with the operation.
-     */
-    globalResponses: [...GlobalResponses[]];
-  }) {
+    debug,
+    throwErrors,
+    strictTypes,
+  }: Pick<
+    Client<
+      Record<string, Resource<Record<string, this>, GlobalResponses>>,
+      GlobalResponses
+    >,
+    'base' | 'globalResponses' | 'axiosInstance'
+  > &
+    ValidationOptions &
+    Pick<this, 'options'>) {
+    const log = (...message: any[]) => {
+      if (debug) {
+        console.log(...message);
+      }
+    };
+
+    const logError = (...message: any[]) => {
+      if (debug) {
+        console.error(...message);
+      }
+    };
+
     if (this.payloadConstructor) {
       const payload = this.payloadConstructor?.(options);
-      this.log('Payload: ', payload);
-      this.payloadModel?.validate(payload);
+      log('Payload: ', payload);
+      this.payloadModel?.validate(payload, {
+        debug,
+        throwErrors,
+        strictTypes,
+      });
     }
 
     type GetResponses<T extends [...ApiResponse<any, any>[]]> = {
@@ -144,53 +160,80 @@ export class Operation<
       | GetResponses<[...GlobalResponses[]]>;
 
     if (this.mock) {
-      this.log('mock detected!');
+      log('mock detected!');
       const mock = this.mock();
-      this.log('Mock: ', mock);
+      log('Mock: ', mock);
       return mock as $Response;
     }
 
-    const response = (await axios.request({
-      method: this.method as any,
-      data: this.payloadConstructor?.(options),
-      url: (this.url as any)(baseUrl, options).href,
-      headers: this.headers?.(options),
-      validateStatus: (status) =>
-        this.responses.some((res) => res.status === status),
-    })) as $Response;
-
-    const matchingResponses = [...this.responses, ...globalResponses].filter(
-      (res) => res.status === response.status
-    );
-
-    this.log('matching Responses: ', matchingResponses);
-
-    let [responseDeclaration] = matchingResponses;
-
-    if (matchingResponses.length > 1) {
-      responseDeclaration = new ApiResponse({
-        model: new Model({
-          schema: t.intersection([
-            ...matchingResponses.map((res) => res.model.base),
-          ] as any),
-          name: matchingResponses.map((res) => res.model.name).join(' | '),
-        }),
-        status: responseDeclaration.status,
+    try {
+      const response = await axiosInstance.request<$Response>({
+        method: this.method as any,
+        data: this.payloadConstructor?.(options),
+        url: (this.url as any)(base, options).href,
+        headers: this.headers?.(options),
+        validateStatus: (status) =>
+          this.responses.some((res) => res.status === status),
       });
+
+      if (!response) {
+        throw new Error(`[${this.name}] Received empty reponse`);
+      }
+
+      const matchingResponses = [...this.responses, ...globalResponses].filter(
+        (res) => res.status === response.status
+      );
+
+      log('matching Responses: ', matchingResponses);
+
+      let [responseDeclaration] = matchingResponses;
+
+      if (matchingResponses.length > 1) {
+        responseDeclaration = new ApiResponse({
+          model: new Model({
+            schema: t.intersection([
+              ...matchingResponses.map((res) => res.model.base),
+            ] as any),
+            name: matchingResponses.map((res) => res.model.name).join(' | '),
+          }),
+          status: responseDeclaration.status,
+        });
+      }
+
+      log('Response declaration: ', responseDeclaration);
+
+      if (
+        !responseDeclaration ||
+        !(responseDeclaration.model instanceof Model)
+      ) {
+        console.error(`[${this.name}] UNEXPECTED RESPONSE: `, response);
+        throw new Error(
+          `Unexpected response without declaration. Status: ${
+            response.status
+          }, data: ${JSON.stringify(response.data)}`
+        );
+      }
+
+      responseDeclaration.model.operation = this.name;
+
+      responseDeclaration.model.validate((response as any).data, {
+        debug,
+        strictTypes,
+        throwErrors,
+      });
+
+      return {
+        ...response,
+        body: (response as any).data,
+      };
+    } catch (error) {
+      if ('response' in error) {
+        const axiosError = error as AxiosError;
+        logError('Unexpected response: ', axiosError.response);
+        axiosError.message = `MODEL NOT FOUND - Unexpected response received from operation ${this.name}: ${axiosError.response?.status}`;
+      }
+
+      throw error;
     }
-
-    this.log('Response declaration: ', responseDeclaration);
-
-    if (!responseDeclaration) {
-      console.error('UNEXPECTED RESPONSE: ', response);
-      throw new Error('Unexpected response without declaration ');
-    }
-
-    responseDeclaration.model.validate((response as any).data);
-
-    return {
-      ...response,
-      body: (response as any).data,
-    };
   }
 }
