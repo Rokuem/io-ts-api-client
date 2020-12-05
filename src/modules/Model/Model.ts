@@ -202,6 +202,19 @@ export class Model<Base extends t.Any = any> {
 
     return 'right' in result ? result.right : target;
   }
+
+  /**
+   * Asserts that target is valid for this model.
+   */
+  public assert(target: any): target is ModelInterface<this> {
+    return Boolean(
+      this.validate(target, {
+        debug: false,
+        throwErrors: true,
+        strictTypes: true,
+      })
+    );
+  }
 }
 
 export type ModelInterface<T extends Model<any>> = t.TypeOf<T['base']>;

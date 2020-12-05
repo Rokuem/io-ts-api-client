@@ -1,8 +1,8 @@
 # About
 
-This is still in beta. Some functionalities may not be working properly yet. I would recommend waiting for version 1.
+This module exposes a Client class used for proving a typesafe way to communicate to an API, with runtime validation to also provide confidence on the interfaces you are using and remove surprises.
 
-This module exposes a Client class used for proving a typesafe way to communicate to an API, with runtime validation to also provide confidence on the interfaces you are using
+This basically does one thing: Makes sure the communication with the API is just as expected.
 
 # Getting started
 
@@ -22,7 +22,10 @@ then, create a client in a folder of your preference:
 
 ```typescript
 const client = new Client({
-  base: 'http://example.com',
+  base: new URL('http://example.com'),
+  throwErrors: true, // Throw validation errors.
+  strictTypes: true, // Strip and validates extra properties.
+  debug: true, // log errors and other messages to the console.
   resources: {
     // Declare your resources.
     someResource: new Resource({
@@ -36,6 +39,18 @@ const client = new Client({
           url: (url, { someOption }) => {
             addPathToUrl(url, '/somePath/' + someOption);
             return url;
+          },
+          payloadModel: new Model(...), // Model to use to validate the payload.
+          payloadConstructor(options) { // use options to construct a payload
+            return {...}
+          },
+          mock(options) { // If defined, the response will be mocked and not validated.
+            return {
+              ...
+            }
+          },
+          headers(options) { // headers to send with the request.
+            return {...}
           },
           responses: [
             new ApiResponse({
@@ -130,53 +145,3 @@ const client = new Client({
 ## Response body alias
 
 To make it better to read with APIs based on the JSON API model. You can use `res.body.data` instead of `res.data.data`.
-
-## Models
-
-To create a Model you need to provide it with a name and an io-ts schema.
-
-```typescript
-const myModel = new Model({
-  name: 'Some Name',
-  schema: t.interface({ ... })
-});
-```
-
-You can use the model to validate an object:
-
-```typescript
-myModel.validate({ target: {...} })
-```
-
-NOTE: This is not a type guard. Its behavior will depend on the options passed to it or on the global Model options.
-
-## Model static options
-
-### strictTypes
-
-You can set `Model.strictTypes` to `true` to remove extra properties, that were not declared, from the responses. This might warn or throw errors depending on the other options.
-
-### throwErrors
-
-If validation errors should throw errors.
-
-recommended to leave this on in development and off in production.
-
-### debug
-
-If there should be logs about what the model is doing. This includes warnings, validation errors, success, and others.
-
-### emitter
-
-The Model.emitter is a type safe event emitter with some events you can listen to to better handle the validation.
-
-## Operation
-
-The operation is a description of a request. It has some features associated with it. You can construct payload, perform mocks, set headers, define options, and others. I recommended taking a look at the type signature of it.
-
-# TODO
-
-- Improve types.
-- Improve tests.
-- Add common responses by default. (maybe)
-- Improve and add events.
