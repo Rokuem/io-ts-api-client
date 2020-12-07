@@ -23,7 +23,7 @@ const okSampleResponse = new ApiResponse({
 
 describe('A Client', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   const client = new Client({
@@ -41,6 +41,7 @@ describe('A Client', () => {
     ],
     resources: {
       samples: new Resource({
+        basePath: '/samples',
         operations: {
           withMock: new Operation({
             url: (url) => url,
@@ -155,6 +156,28 @@ describe('A Client', () => {
       });
     });
 
+    describe('When executing an operation', () => {
+      jest.spyOn(mockedAxios, 'request');
+
+      mockedAxios.nextResponse = {
+        status: 200,
+        data: {
+          ok: true,
+        },
+      };
+
+      API.samples.getOk();
+
+      expect(mockedAxios.request).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: (client.resources.samples.operations.getOk.url as any)(
+            new URL(
+              testConfig.testServerUrl + client.resources.samples.basePath
+            )
+          ).href,
+        })
+      );
+    });
     describe('When executing a operation with response data', () => {
       test('The response.data should contain the expected model', async () => {
         mockedAxios.nextResponse = {

@@ -4,8 +4,31 @@ exports[`A Client Should match the snapshot: sample client 1`] = `
 Client {
   "axiosInstance": Object {
     "create": [Function],
-    "nextResponse": Object {},
-    "request": [Function],
+    "nextResponse": Object {
+      "data": Object {
+        "ok": true,
+      },
+      "status": 200,
+    },
+    "request": [MockFunction] {
+      "calls": Array [
+        Array [
+          Object {
+            "data": undefined,
+            "headers": undefined,
+            "method": "GET",
+            "url": "http://localhost:8080/samples/sample/ok",
+            "validateStatus": [Function],
+          },
+        ],
+      ],
+      "results": Array [
+        Object {
+          "type": "return",
+          "value": Promise {},
+        },
+      ],
+    },
   },
   "base": "http://localhost:8080/",
   "debug": false,
@@ -76,7 +99,7 @@ Client {
       },
     },
     "samples": Resource {
-      "basePath": "",
+      "basePath": "/samples",
       "operations": Object {
         "getOk": Operation {
           "method": "GET",

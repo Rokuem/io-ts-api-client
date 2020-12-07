@@ -67,6 +67,8 @@ export class Resource<
       throw new Error('Invalid operation: ' + options.operation);
     }
 
-    return operation.execute(options) as ReturnType<Operations[K]['execute']>;
+    return operation.execute({ ...options, base: resourceUrl }) as ReturnType<
+      Operations[K]['execute']
+    >;
   }
 }
