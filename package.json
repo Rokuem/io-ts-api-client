@@ -7,7 +7,7 @@
   "types": "dist/main.d.ts",
   "scripts": {
     "test": "jest",
-    "prepublish": "yarn build",
+    "prepare": "yarn build",
     "build": "yarn ts-node scripts/build.ts"
   },
   "files": [
