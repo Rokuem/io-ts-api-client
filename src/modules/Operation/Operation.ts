@@ -230,7 +230,7 @@ export class Operation<
       if ('response' in error) {
         const axiosError = error as AxiosError;
         logError('Unexpected response: ', axiosError.response);
-        axiosError.message = `MODEL NOT FOUND - Unexpected response received from operation ${this.name}: ${axiosError.response?.status}`;
+        axiosError.message = `MODEL NOT FOUND - Unexpected response received from operation ${this.name}: ${axiosError.response?.status} - ${JSON.stringify(axiosError.response?.data)}`;
       }
 
       throw error;

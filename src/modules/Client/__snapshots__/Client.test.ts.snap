@@ -1,34 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`A Client Its API When executing an operation When the response status is not declared The operation should throw and error: Missing Model Error 1`] = `[Error: Unexpected response without declaration. Status: 333, data: {"ok":true}]`;
+
 exports[`A Client Should match the snapshot: sample client 1`] = `
 Client {
   "axiosInstance": Object {
     "create": [Function],
-    "nextResponse": Object {
-      "data": Object {
-        "ok": true,
-      },
-      "status": 200,
-    },
-    "request": [MockFunction] {
-      "calls": Array [
-        Array [
-          Object {
-            "data": undefined,
-            "headers": undefined,
-            "method": "GET",
-            "url": "http://localhost:8080/samples/sample/ok",
-            "validateStatus": [Function],
-          },
-        ],
-      ],
-      "results": Array [
-        Object {
-          "type": "return",
-          "value": Promise {},
-        },
-      ],
-    },
+    "nextResponse": Object {},
+    "request": [Function],
   },
   "base": "http://localhost:8080/",
   "debug": false,

@@ -1,27 +1,27 @@
-import { expectTypeOf } from 'expect-type';
-import { Client } from './Client';
-import { testConfig } from '../../testConfig';
-import { Resource } from '../Resource/Resource';
-import { Operation } from '../Operation/Operation';
-import { HttpMethod } from '../../constants/httpMethod';
-import { addPathToUrl } from '../../helpers/resolveUrl';
-import { ApiResponse } from '../ApiResponse/ApiResponse';
-import { HttpStatus } from '../../constants/HttpStatus';
-import { t } from '../t/t';
-import { Model, ModelInterface } from '../Model/Model';
-import mockedAxios from '../../../__mocks__/axios';
+import { expectTypeOf } from "expect-type";
+import { Client } from "./Client";
+import { testConfig } from "../../testConfig";
+import { Resource } from "../Resource/Resource";
+import { Operation } from "../Operation/Operation";
+import { HttpMethod } from "../../constants/httpMethod";
+import { addPathToUrl } from "../../helpers/resolveUrl";
+import { ApiResponse } from "../ApiResponse/ApiResponse";
+import { HttpStatus } from "../../constants/HttpStatus";
+import { t } from "../t/t";
+import { Model, ModelInterface } from "../Model/Model";
+import mockedAxios from "../../../__mocks__/axios";
 
 const okSampleResponse = new ApiResponse({
   status: HttpStatus.OK,
   model: new Model({
-    name: 'API sample resource',
+    name: "API sample resource",
     schema: t.interface({
       ok: t.boolean,
     }),
   }),
 });
 
-describe('A Client', () => {
+describe("A Client", () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -32,7 +32,7 @@ describe('A Client', () => {
       new ApiResponse({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         model: new Model({
-          name: 'API 500 resource',
+          name: "API 500 resource",
           schema: t.interface({
             ok: t.literal(false),
           }),
@@ -41,7 +41,7 @@ describe('A Client', () => {
     ],
     resources: {
       samples: new Resource({
-        basePath: '/samples',
+        basePath: "/samples",
         operations: {
           withMock: new Operation({
             url: (url) => url,
@@ -59,7 +59,7 @@ describe('A Client', () => {
           getOk: new Operation({
             method: HttpMethod.GET,
             url(url) {
-              addPathToUrl(url, '/sample/ok');
+              addPathToUrl(url, "/sample/ok");
               return url;
             },
             responses: [okSampleResponse],
@@ -67,10 +67,10 @@ describe('A Client', () => {
           getSample: new Operation({
             method: HttpMethod.GET,
             options: {} as {
-              sampleType: 'ok' | 'accepted';
+              sampleType: "ok" | "accepted";
             },
             url: (url, { sampleType }) => {
-              addPathToUrl(url, '/sample/' + sampleType);
+              addPathToUrl(url, "/sample/" + sampleType);
               return url;
             },
             responses: [
@@ -78,7 +78,7 @@ describe('A Client', () => {
               new ApiResponse({
                 status: HttpStatus.ACCEPTED,
                 model: new Model({
-                  name: 'API sample resource',
+                  name: "API sample resource",
                   schema: t.interface({
                     accepted: t.boolean,
                   }),
@@ -93,7 +93,7 @@ describe('A Client', () => {
           getOk: new Operation({
             method: HttpMethod.GET,
             url(url) {
-              addPathToUrl(url, '/sample/ok');
+              addPathToUrl(url, "/sample/ok");
               return url;
             },
             responses: [okSampleResponse],
@@ -103,83 +103,105 @@ describe('A Client', () => {
     },
   });
 
-  test('Should match the snapshot', () => {
-    expect(client).toMatchSnapshot('sample client');
+  test("Should match the snapshot", () => {
+    expect(client).toMatchSnapshot("sample client");
   });
 
-  describe('Its API', () => {
+  describe("Its API", () => {
     const API = client.getApi();
 
-    describe('Should convert its operations to an api', () => {
-      test('The API should have a key for each resource', () => {
-        const resource = 'samples';
+    describe("Should convert its operations to an api", () => {
+      test("The API should have a key for each resource", () => {
+        const resource = "samples";
         expect(API).toHaveProperty(resource);
         expectTypeOf(API).toHaveProperty(resource);
       });
 
-      test('Each resource should have an operation', () => {
-        const operation = 'getSample';
+      test("Each resource should have an operation", () => {
+        const operation = "getSample";
         expect(API.samples).toHaveProperty(operation);
         expectTypeOf(API.samples).toHaveProperty(operation);
       });
 
       const expected = {
-        sampleType: '' as 'ok' | 'accepted',
+        sampleType: "" as "ok" | "accepted",
       } as const;
-      test('Operations with options should expect it as a parameter', () => {
+      test("Operations with options should expect it as a parameter", () => {
         expectTypeOf(API.samples.getSample).parameters.toMatchTypeOf([
           expected as typeof expected | undefined,
         ]);
       });
 
-      test('Operations without options should not expect anything as a parameter', () => {
+      test("Operations without options should not expect anything as a parameter", () => {
         expectTypeOf(API.samples.getOk).parameters.toMatchTypeOf([] as const);
       });
     });
 
-    describe('When executing a mocked operation', () => {
+    describe("When executing a mocked operation", () => {
       const request = API.samples.withMock();
-      test('The response should match the mock', async () => {
+      test("The response should match the mock", async () => {
         const response = await request;
         expect(response).toEqual(
           client.resources.samples.operations.withMock.mock?.()
         );
       });
 
-      test('The Mock should have the correct type', async () => {
+      test("The Mock should have the correct type", async () => {
         const response = await request;
         expectTypeOf(response.data).toMatchTypeOf(
           {} as ModelInterface<
-            typeof client['resources']['samples']['operations']['withMock']['responses'][0]['model']
+            typeof client["resources"]["samples"]["operations"]["withMock"]["responses"][0]["model"]
           >
         );
       });
     });
 
-    describe('When executing an operation', () => {
-      jest.spyOn(mockedAxios, 'request');
+    describe("When executing an operation", () => {
+      test("It should have the correct URL", () => {
+        jest.spyOn(mockedAxios, "request");
 
-      mockedAxios.nextResponse = {
-        status: 200,
-        data: {
-          ok: true,
-        },
-      };
+        mockedAxios.nextResponse = {
+          status: 200,
+          data: {
+            ok: true,
+          },
+        };
+        API.samples.getOk();
 
-      API.samples.getOk();
+        expect(mockedAxios.request).toHaveBeenCalledWith(
+          expect.objectContaining({
+            url: (client.resources.samples.operations.getOk.url as any)(
+              new URL(
+                testConfig.testServerUrl + client.resources.samples.basePath
+              )
+            ).href,
+          })
+        );
+      });
 
-      expect(mockedAxios.request).toHaveBeenCalledWith(
-        expect.objectContaining({
-          url: (client.resources.samples.operations.getOk.url as any)(
-            new URL(
-              testConfig.testServerUrl + client.resources.samples.basePath
-            )
-          ).href,
+      describe('When the response status is not declared', () => {
+        beforeEach(() => {
+          mockedAxios.nextResponse = {
+            status: 333,
+            data: {
+              ok: true
+            }
+          }
+        });
+
+        test('The operation should throw and error', async (done) => {
+          try {
+            await API.samples.getOk();
+            fail();
+          } catch (error) {
+            expect(error).toMatchSnapshot('Missing Model Error');
+            done();
+          }
         })
-      );
+      })
     });
-    describe('When executing a operation with response data', () => {
-      test('The response.data should contain the expected model', async () => {
+    describe("When executing a operation with response data", () => {
+      test("The response.data should contain the expected model", async () => {
         mockedAxios.nextResponse = {
           status: 200,
           data: {
@@ -199,23 +221,23 @@ describe('A Client', () => {
         });
       });
 
-      test('The response status should be OK and match in both value and type', async () => {
+      test("The response status should be OK and match in both value and type", async () => {
         const response = await API.samples.withMock();
 
         expect(response.status).toBe(HttpStatus.OK);
         expectTypeOf(response.status).toMatchTypeOf(HttpStatus.OK);
       });
 
-      describe('When executing an operation with multiple responses', () => {
-        test('The response status should serve as a type guard', async () => {
+      describe("When executing an operation with multiple responses", () => {
+        test("The response status should serve as a type guard", async () => {
           mockedAxios.nextResponse = {
             status: 200,
             data: {
-              sampleType: 'ok',
+              sampleType: "ok",
             },
           };
           const request = API.samples.getSample({
-            sampleType: 'ok',
+            sampleType: "ok",
           });
 
           const response = await request;
@@ -241,7 +263,7 @@ describe('A Client', () => {
       });
     });
 
-    describe('when using strict types', () => {
+    describe("when using strict types", () => {
       beforeAll(() => {
         client.strictTypes = true;
         client.debug = true;
@@ -251,45 +273,45 @@ describe('A Client', () => {
         client.debug = false;
       });
 
-      describe('A request which return extra properties', () => {
+      describe("A request which return extra properties", () => {
         beforeEach(() => {
           console.error = jest.fn();
           console.log = jest.fn();
         });
 
-        test('Should not have those properties in the response data', async () => {
+        test("Should not have those properties in the response data", async () => {
           const request = API.samples.getOk();
           mockedAxios.nextResponse = {
             status: 200,
             data: {
               ok: true,
-              foo: 'bar',
+              foo: "bar",
             },
           };
           const response = await request;
 
-          expect(response.data).not.toHaveProperty('foo');
+          expect(response.data).not.toHaveProperty("foo");
         });
 
-        test('Should notify about extra properties', async () => {
+        test("Should notify about extra properties", async () => {
           mockedAxios.nextResponse = {
             status: 200,
             data: {
               ok: true,
-              foo: 'bar',
+              foo: "bar",
             },
           };
 
           await API.samples.getOk();
 
           expect(console.error).toHaveBeenCalledWith(
-            expect.stringContaining('foo')
+            expect.stringContaining("foo")
           );
         });
       });
     });
 
-    describe('When throwing errors', () => {
+    describe("When throwing errors", () => {
       beforeAll(() => {
         client.throwErrors = true;
         client.strictTypes = true;
@@ -299,17 +321,17 @@ describe('A Client', () => {
         client.strictTypes = false;
       });
 
-      describe('When executing an operation', () => {
-        describe('Where the response has extra values', () => {
+      describe("When executing an operation", () => {
+        describe("Where the response has extra values", () => {
           let error = new Error();
 
-          test('The response should fail with an error', async () => {
+          test("The response should fail with an error", async () => {
             try {
               mockedAxios.nextResponse = {
                 status: 200,
                 data: {
                   ok: true,
-                  foo: 'bar',
+                  foo: "bar",
                 },
               };
               await API.samples.getOk();
@@ -320,12 +342,12 @@ describe('A Client', () => {
             }
           });
 
-          test('The error should contain the failed property', () => {
-            expect(error.message).toContain('foo');
+          test("The error should contain the failed property", () => {
+            expect(error.message).toContain("foo");
           });
 
-          test('The error should contain the operation name', () => {
-            expect(error.message).toContain('getOk');
+          test("The error should contain the operation name", () => {
+            expect(error.message).toContain("getOk");
           });
         });
       });

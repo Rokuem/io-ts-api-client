@@ -123,7 +123,7 @@ if (res.status == HttpStatus.OK) {
 }
 ```
 
-# Features
+# Extra Features
 
 ## Global responses
 
