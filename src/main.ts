@@ -1,3 +1,4 @@
+export { t } from './modules/t/t';
 export { addPathToUrl } from './helpers/resolveUrl';
 export { HttpMethod } from './constants/httpMethod';
 export { HttpStatus } from './constants/HttpStatus';
