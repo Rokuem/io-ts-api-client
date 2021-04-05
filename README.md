@@ -182,6 +182,8 @@ t.schema({
   required: { a: t.string },
   optional: { b: t.string }
 }) // output: t.intersection([t.interface({ a: t.string }), t.partial({ b: t.string })])
+t.url // expects an url that can be passed to new URL()
+t.dateString // expects a string that can create a valid date with the Date constructor.
 ```
 
 It also includes the types from the module 'io-ts-types' (see more at https://gcanti.github.io/io-ts-types/docs/modules)
