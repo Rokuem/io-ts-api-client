@@ -18,6 +18,7 @@ export const t = {
   ]),
   /**
    * Type for valid date strings.
+   * @since 0.8.5
    */
   dateString: new types.Type<string, string, unknown>(
     'date string',
@@ -39,6 +40,7 @@ export const t = {
   ),
   /**
    * Type for valid urls.
+   * @since 0.8.5
    */
   url: new types.Type<string, string, unknown>(
     'url',
