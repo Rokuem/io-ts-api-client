@@ -3,6 +3,7 @@ import reporter from 'io-ts-reporters';
 import { Either, isRight } from 'fp-ts/lib/Either';
 import { TypedEmitter } from '../TypedEmitter/TypedEmmiter';
 import { addedDiff } from 'deep-object-diff';
+import { ValidationOptions } from '../types';
 
 /**
  * Simple io-ts model with a validator. This is used to safeguard against API changes and to provide a easy solution for type checking it.
@@ -31,6 +32,14 @@ export class Model<Base extends t.Any = any> {
    * you can use tis to extend other interfaces.
    */
   public base: Base;
+
+  /**
+   * Ts interface of the model.
+   * 
+   * !Warn: Do not use this as an value.
+   * @since 0.7.4
+   */
+  public tsInterface!: t.TypeOf<Base>
 
   public constructor(config: {
     /**
@@ -132,9 +141,7 @@ export class Model<Base extends t.Any = any> {
 
   private handleValidResult(
     target: any,
-    options: {
-      debug: boolean;
-    }
+    options: ValidationOptions
   ) {
     if (options.debug) {
       console.log(
@@ -155,16 +162,12 @@ export class Model<Base extends t.Any = any> {
    */
   public validate(
     target: any,
-    options: {
-      strictTypes: boolean;
-      throwErrors: boolean;
-      debug: boolean;
-    }
+    options: ValidationOptions
   ) {
     Model.emitter.emit('before-validation', this.name);
 
     let result = this.base.decode(target);
-    const isValid = isRight(result as any);
+    const isValid = isRight(result);
 
     if (options.strictTypes) {
       const filtered = this.checkForExtraKeys({
@@ -187,15 +190,15 @@ export class Model<Base extends t.Any = any> {
         this.handleInvalidResult({
           target,
           result,
-          debug: Boolean(options.debug),
-          throwErrors: Boolean(options.throwErrors),
+          debug: !!options.debug,
+          throwErrors: !!options.throwErrors,
         });
       } catch (e) {
         Model.emitter.emit('after-validation', this.name);
         throw e;
       }
     } else {
-      this.handleValidResult(target, { debug: Boolean(options.debug) });
+      this.handleValidResult(target, options);
     }
 
     Model.emitter.emit('after-validation', this.name);
@@ -206,14 +209,26 @@ export class Model<Base extends t.Any = any> {
   /**
    * Asserts that target is valid for this model.
    */
-  public assert(target: any): target is ModelInterface<this> {
-    return Boolean(
+  public assert(target: any, options?: { 
+    /**
+     * Fails the assertion in case the target has extra properties.
+     */
+    strict?: boolean;
+    /**
+     * Debug the validation process.
+     */
+    debug?: boolean;
+  }): target is ModelInterface<this> {
+    try {
       this.validate(target, {
-        debug: false,
+        debug: !!options?.debug,
         throwErrors: true,
-        strictTypes: true,
-      })
-    );
+        strictTypes: !!options?.strict,
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
