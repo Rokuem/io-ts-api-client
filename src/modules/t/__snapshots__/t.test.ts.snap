@@ -227,6 +227,13 @@ Object {
     "name": "Date",
     "validate": [Function],
   },
+  "dateString": Type {
+    "decode": [Function],
+    "encode": [Function],
+    "is": [Function],
+    "name": "date string",
+    "validate": [Function],
+  },
   "dictionary": [Function],
   "either": [Function],
   "emptyTags": Object {},
@@ -339,6 +346,13 @@ Object {
     "encode": [Function],
     "is": [Function],
     "name": "unknown",
+    "validate": [Function],
+  },
+  "url": Type {
+    "decode": [Function],
+    "encode": [Function],
+    "is": [Function],
+    "name": "url",
     "validate": [Function],
   },
   "void": VoidType {
