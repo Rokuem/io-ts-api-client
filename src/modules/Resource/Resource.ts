@@ -54,7 +54,7 @@ export class Resource<
       Pick<Operations[K], 'options'> & {
         operation: K;
       } & ValidationOptions
-  ) {
+  ): ReturnType<Operations[K]['execute']> {
     const resourceUrl = new URL(options.base.href);
 
     if (this.basePath) {
@@ -67,6 +67,6 @@ export class Resource<
       throw new Error('Invalid operation: ' + options.operation);
     }
 
-    return operation.execute({ ...options, base: resourceUrl })
+    return operation.execute({ ...options, base: resourceUrl }) as ReturnType<Operations[K]['execute']>
   }
 }
