@@ -309,6 +309,7 @@ Object {
     "name": "RegExp",
     "validate": [Function],
   },
+  "schema": [Function],
   "setFromArray": [Function],
   "strict": [Function],
   "string": StringType {
