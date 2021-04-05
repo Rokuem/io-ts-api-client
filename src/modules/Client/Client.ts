@@ -37,6 +37,9 @@ export class Client<
   Resources extends Record<string, Resource<any, any>>,
   GlobalResponses extends ApiResponse<any, any> = ApiResponse<never, never>
 > implements ValidationOptions {
+  /**
+   * If the validation should output console.logs
+   */
   public debug = false;
   public strictTypes = false;
   public throwErrors = false;

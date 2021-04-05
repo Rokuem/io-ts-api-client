@@ -145,3 +145,102 @@ const client = new Client({
 ## Response body alias
 
 To make it better to read with APIs based on the JSON API model. You can use `res.body.data` instead of `res.data.data`.
+
+## Model validation listeners
+
+You can attach listeners to some validation events in the Model class.
+
+This can be verified by accessing:
+
+```typescript
+Model.emmiter.on('some-event');
+```
+
+The emitter is typed so that you may know exactly what you can lister for and what to expect
+
+```typescript
+  public static emitter = new TypedEmitter<{
+    'before-validation': (model: string) => void;
+    'validation-success': (model: string) => void;
+    'validation-error': (model: string, error: unknown) => void;
+    'after-validation': (model: string) => void;
+    'extra-keys-detected': (model: string, error: string) => void;
+  }>();
+```
+
+## Extra io-ts types
+
+You can `import { t } from 'io-ts-api-client'` for access to extra io-ts types along with io-ts itself
+
+Some of the extra types:
+
+```typescript
+t.nullable(t.string)// output: t.union([t.string, t.null])
+t.schema({
+  required: { a: t.string },
+  optional: { b: t.string }
+}) // output: t.intersection([t.interface({ a: t.string }), t.partial({ b: t.string })])
+```
+
+It also includes the types from the module 'io-ts-types' (see more at https://gcanti.github.io/io-ts-types/docs/modules)
+
+## Assert model
+
+You can use the model instance for type guards too:
+
+```typescript
+const someModel = new Model({
+  name: 'myModel',
+  schema: t.interface({ a: t.string })
+});
+
+const correctObject: any = { a: '' }
+const similarObject: any = { a: '', b: '' };
+const someObject: any = {}; // any
+
+if (someModel.assert(correctObject)) { // true since correctOBject matches the model schema.
+  someObject // { a: string }
+}
+
+if (someModel.assert(someObject)) { // false since someObject is {}
+  someObject // { a: string }
+}
+
+if (someModel.assert(similarObject)) { // true since similarObject has all properties from the Model schema.
+  someObject // { a: string }
+}
+
+if (someModel.assert(similarObject, { strict: true })) { // false since similarObject has a extra key and we wanted a strict assertion.
+  someObject // { a: string }
+}
+```
+
+## Get TS interface from model
+
+For convenience, you can get the interface type from the Model instance itself
+
+```typescript
+const someModel = new Model({
+  name: 'myModel',
+  schema: t.interface({ a: t.string })
+});
+
+function logModel(target: typeof someModel['tsInterface']) {
+  //...
+}
+```
+
+you can also use the `ModelInterface` helper
+
+```typescript
+import { ModelInterface } from 'io-ts-api-client';
+
+const someModel = new Model({
+  name: 'myModel',
+  schema: t.interface({ a: t.string })
+});
+
+function logModel(target: ModelInterface<typeof someModel>) {
+  //...
+}
+```

@@ -4,7 +4,7 @@ export interface ValidationOptions {
    *
    * It is recommended to set this to true during development, but leave it disabled in the rest.
    * - During tests, you probably won't need to validate models since you will be using mocks. Typescript should be enough for that.
-   * - During production, throwing validation erros might stop the app, so it is recommended to not enable this.
+   * - During production, throwing validation erros might stop the app, so it is recommended to not enable this and add a listener to Model.emmiter.on('validation-error') for error reporting.
    */
   throwErrors: boolean;
   /**
