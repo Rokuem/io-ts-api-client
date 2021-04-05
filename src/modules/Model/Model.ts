@@ -16,9 +16,9 @@ export class Model<Base extends t.Any = any> {
   public static emitter = new TypedEmitter<{
     'before-validation': (model: string) => void;
     'validation-success': (model: string) => void;
-    'validation-error': (model: string, error: unknown) => void;
+    'validation-error': (model: string, error: Error) => void;
     'after-validation': (model: string) => void;
-    'extra-keys-detected': (model: string, error: string) => void;
+    'extra-keys-detected': (model: string, error: Error) => void;
   }>();
 
   /**
@@ -97,7 +97,7 @@ export class Model<Base extends t.Any = any> {
           '  '
         )}`;
 
-        Model.emitter.emit('extra-keys-detected', this.name, errorMessage);
+        Model.emitter.emit('extra-keys-detected', this.name, new Error(errorMessage));
 
         if (options.throwErrors) {
           throw new Error(errorMessage);
@@ -127,7 +127,7 @@ export class Model<Base extends t.Any = any> {
         2
       )}`;
 
-      Model.emitter.emit('validation-error', this.name, error);
+      Model.emitter.emit('validation-error', this.name, new Error(validationMessage));
 
       if (options.debug) {
         console.error(validationMessage);

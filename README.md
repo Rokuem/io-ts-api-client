@@ -164,9 +164,9 @@ The emitter is typed so that you may know exactly what you can lister for and wh
   public static emitter = new TypedEmitter<{
     'before-validation': (model: string) => void;
     'validation-success': (model: string) => void;
-    'validation-error': (model: string, error: unknown) => void;
+    'validation-error': (model: string, error: Error) => void;
     'after-validation': (model: string) => void;
-    'extra-keys-detected': (model: string, error: string) => void;
+    'extra-keys-detected': (model: string, error: Error) => void;
   }>();
 ```
 
