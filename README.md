@@ -21,6 +21,8 @@ yarn add io-ts-api-client
 then, create a client in a folder of your preference:
 
 ```typescript
+export { HttpStatus, HttpMethod, Client, Resource, Operation } from './constants/HttpStatus';
+
 const client = new Client({
   base: new URL('http://example.com'),
   throwErrors: true, // Throw validation errors.
@@ -244,3 +246,13 @@ function logModel(target: ModelInterface<typeof someModel>) {
   //...
 }
 ```
+
+## HttpMethod and HttpStatus
+
+To properly declare the operations responses, you will need to use the enums exported by this module:
+
+```typescript
+import { HttpMethod, HttpStatus } from 'io-ts-api-client';
+```
+
+this will avoid magic numbers and string repetitions.
