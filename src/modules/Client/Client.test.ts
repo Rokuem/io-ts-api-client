@@ -45,7 +45,7 @@ describe("A Client", () => {
         operations: {
           withMock: new Operation({
             url: (url) => url,
-            mock() {
+            async mock() {
               return {
                 status: 200,
                 data: {
@@ -142,7 +142,7 @@ describe("A Client", () => {
       test("The response should match the mock", async () => {
         const response = await request;
         expect(response).toEqual(
-          client.resources.samples.operations.withMock.mock?.()
+         expect.objectContaining(await client.resources.samples.operations.withMock.mock?.())
         );
       });
 

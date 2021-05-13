@@ -60,9 +60,15 @@ export class Operation<
    * Function to mock the response. Useful for testing and for development when the API is not ready.
    */
   public mock?: (
-    path?: string,
-    payload?: Payload
-  ) => Partial<
+    /**
+     * Computed url returned by the Operation url option.
+     */
+    url?: URL,
+    /**
+     * Payload returned by the PayloadConstructor
+     */
+    payload?: ModelInterface<Payload>
+  ) => Promise<Partial<
     {
       [key in keyof Responses]: Responses[key] extends ApiResponse<any, any>
         ? Partial<
@@ -73,11 +79,11 @@ export class Operation<
           >
         : Responses[key];
     }[number]
-  >;
+  >>;
   /**
    * Function to construct the payload using the provided options for the operation.
    */
-  payloadConstructor?: (options?: Options) => Payload;
+  payloadConstructor?: (options?: Options) => ModelInterface<Payload>;
   constructor(
     config: Pick<
       Operation<Payload, Responses, Method, Options>,
@@ -161,9 +167,9 @@ export class Operation<
 
     if (this.mock) {
       log('mock detected!');
-      const mock = this.mock();
+      const mock = await this.mock((this.url as any)(base, options), this.payloadConstructor?.(options));
       log('Mock: ', mock);
-      return mock as $Response;
+      return { ...mock, body: (mock as any)?.data } as $Response;
     }
 
     try {

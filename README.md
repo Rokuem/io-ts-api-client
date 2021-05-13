@@ -46,7 +46,7 @@ const client = new Client({
           payloadConstructor(options) { // use options to construct a payload
             return {...}
           },
-          mock(options) { // If defined, the response will be mocked and not validated.
+          async mock(path, payload) { // If defined, the response will be mocked and not validated.
             return {
               ...
             }
