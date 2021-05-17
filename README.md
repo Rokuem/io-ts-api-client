@@ -24,7 +24,7 @@ then, create a client in a folder of your preference:
 export { HttpStatus, HttpMethod, Client, Resource, Operation } from './constants/HttpStatus';
 
 const client = new Client({
-  base: new URL('http://example.com'),
+  base: new URL('http://example.com') // can also be a function.
   throwErrors: true, // Throw validation errors.
   strictTypes: true, // Strip and validates extra properties.
   debug: true, // log errors and other messages to the console.

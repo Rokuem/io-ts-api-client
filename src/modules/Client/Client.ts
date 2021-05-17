@@ -15,6 +15,15 @@ export type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
     : never;
 }[number];
 
+type ApplyComputable<T extends Record<string, any>> ={
+  [key in keyof T]: T[key] | (() => T[key]);
+};
+
+const getComputedValue = <T>(target: T | (() => T)): T => {
+  if (typeof target === 'function') return (target as any)();
+  return target;
+}
+
 /**
  * API client constructor. Use this to define a client then, use the `client.getApi()` to get the typesafe api.
  *
@@ -36,7 +45,7 @@ export type MapResponses<Responses extends [...ApiResponse<any, any>[]]> = {
 export class Client<
   Resources extends Record<string, Resource<any, any>>,
   GlobalResponses extends ApiResponse<any, any> = ApiResponse<never, never>
-> implements ValidationOptions {
+> implements ApplyComputable<ValidationOptions> {
   /**
    * If the validation should output console.logs
    */
@@ -56,9 +65,12 @@ export class Client<
    */
 
   /**
-   * URL of the server that will be used as a base. Needs to be valid.
+   * URL of the server that will be used as a base for all api calls.
+   * 
+   * This can also be a function with the context as a argument (resource name, operation name, options).
+   * It is recommended to define the urls in the operation with the Operation.path and only the base here.
    */
-  public base!: URL;
+  public base!: URL | (<ResourceName extends keyof Resources>(resource: ResourceName) => URL);
 
   /**
    * List of resources provided by the base url of the API.
@@ -79,7 +91,7 @@ export class Client<
       Client<Resources, GlobalResponses>,
       'base' | 'globalResponses' | 'resources'
     > &
-      Partial<ValidationOptions>
+      Partial<ApplyComputable<ValidationOptions>>
   ) {
     Object.assign(this, options);
   }
@@ -121,7 +133,7 @@ export class Client<
         mapObject(resource.operations, (operationName) => [
           operationName,
           (options: any) => {
-            const operationUrl = new URL(this.base.href);
+            const operationUrl = new URL(typeof this.base === 'function' ? this.base(resourceName).href : this.base.href);
 
             if (typeof operationName !== 'string') {
               throw new Error('Operation names must be string');
@@ -133,9 +145,9 @@ export class Client<
               options,
               base: operationUrl,
               globalResponses: this.globalResponses,
-              debug: this.debug,
-              strictTypes: this.strictTypes,
-              throwErrors: this.throwErrors,
+              debug: getComputedValue(this.debug),
+              strictTypes: getComputedValue(this.strictTypes),
+              throwErrors: getComputedValue(this.throwErrors),
             });
           },
         ]),

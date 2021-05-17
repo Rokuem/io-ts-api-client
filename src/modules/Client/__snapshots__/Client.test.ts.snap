@@ -9,7 +9,7 @@ Client {
     "nextResponse": Object {},
     "request": [Function],
   },
-  "base": "http://localhost:8080/",
+  "base": [Function],
   "debug": false,
   "globalResponses": Array [
     ApiResponse {

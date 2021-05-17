@@ -27,7 +27,7 @@ describe("A Client", () => {
   });
 
   const client = new Client({
-    base: new URL(testConfig.testServerUrl),
+    base: () => new URL(testConfig.testServerUrl),
     globalResponses: [
       new ApiResponse({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
