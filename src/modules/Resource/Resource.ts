@@ -44,12 +44,12 @@ export class Resource<
    * Executes an operation inside a resource.
    */
   public execute<K extends keyof Operations>(
-    options: Pick<
+    options: { base: URL } & Pick<
       Client<
         Record<string, Resource<Operations, GlobalResponses>>,
         GlobalResponses
       >,
-      'base' | 'globalResponses' | 'axiosInstance'
+      'globalResponses' | 'axiosInstance'
     > &
       Pick<Operations[K], 'options'> & {
         operation: K;
