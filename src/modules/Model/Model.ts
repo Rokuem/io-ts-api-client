@@ -4,12 +4,12 @@ import { Either, isRight } from 'fp-ts/lib/Either';
 import { TypedEmitter } from '../TypedEmitter/TypedEmmiter';
 import { addedDiff } from 'deep-object-diff';
 import { ValidationOptions } from '../types';
+import { deepMerge } from '../../helpers/deepMerge';
 
 /**
  * Simple io-ts model with a validator. This is used to safeguard against API changes and to provide a easy solution for type checking it.
- *
  */
-export class Model<Base extends t.Any = any> {
+export class Model<Schema extends t.Any = any, SampleKey extends string = never, Samples extends t.TypeOf<Schema> = t.TypeOf<any>> {
   /**
    * Emitter for modal events.
    */
@@ -27,11 +27,16 @@ export class Model<Base extends t.Any = any> {
   public name: string;
 
   /**
+   * @deprecated - use model.schema instead.
+   */
+  public base: Schema;
+
+   /**
    * IO-TS interface used for the model.
    *
-   * you can use tis to extend other interfaces.
+   * you can use this to extend other interfaces.
    */
-  public base: Base;
+  public schema!: Schema;
 
   /**
    * Ts interface of the model.
@@ -39,7 +44,9 @@ export class Model<Base extends t.Any = any> {
    * !Warn: Do not use this as an value.
    * @since 0.7.4
    */
-  public tsInterface!: t.TypeOf<Base>
+  public tsInterface!: t.TypeOf<Schema>
+
+  public samples!: Record<SampleKey, Samples>;
 
   public constructor(config: {
     /**
@@ -49,10 +56,13 @@ export class Model<Base extends t.Any = any> {
     /**
      * The io-ts model.
      */
-    schema: Base;
+    schema: Schema;
+    samples?: Record<SampleKey, Samples>;
   }) {
     this.name = config.name;
     this.base = config.schema;
+    this.schema = config.schema;
+    this.samples = config.samples || {} as any;
   }
 
   /**
@@ -229,6 +239,22 @@ export class Model<Base extends t.Any = any> {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Creates an object that matches the model.
+   * Useful for creating mocks.
+   */
+  public createSample<T extends t.TypeOf<Schema>>(sample: T) {
+    return sample;
+  }
+
+  /**
+   * Extend one of the declared samples in the model declaration.
+   * Useful for tests.
+   */
+  public extendSample<T extends Partial<t.TypeOf<Schema>>, K extends SampleKey>(base: K, sample: T) {
+    return deepMerge(this.samples[base], sample);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "io-ts-api-client",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "main": "dist/main.js",
   "license": "MIT",
   "description": "An API client constructor with runtime validation based on io-ts. A nice solution to making sure the data you receive matches the typescript interfaces.",
@@ -42,6 +42,7 @@
     "jest-environment-node": "^26.6.2",
     "monocle-ts": "^2.3.3",
     "newtype-ts": "^0.3.4",
+    "ts-essentials": "^7.0.1",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "tslib": "^2.0.3",

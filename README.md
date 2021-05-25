@@ -1,9 +1,8 @@
 # About
 
-This module exposes a Client class used for proving a typesafe way to communicate to an API, with runtime validation to also provide confidence on the interfaces you are using and remove surprises.
+This module exposes a Client class used for proving a type safe way to communicate to an API, with runtime validation to also provide confidence on the interfaces you are using and remove surprises.
 
-This basically does one thing: Makes sure the communication with the API is just as expected.
-
+it also possible to use this package to mock requests from the API.
 # Getting started
 
 First, install the module:
@@ -23,11 +22,18 @@ then, create a client in a folder of your preference:
 ```typescript
 export { HttpStatus, HttpMethod, Client, Resource, Operation } from './constants/HttpStatus';
 
+const responseModel = new Model({
+  name: 'Some model name',
+  schema: t.interface({
+    foo: t.literal('bar'),
+  }),
+});
+
 const client = new Client({
-  base: new URL('http://example.com') // can also be a function.
-  throwErrors: true, // Throw validation errors.
-  strictTypes: true, // Strip and validates extra properties.
-  debug: true, // log errors and other messages to the console.
+  base: new URL('http://example.com') // Can also be a function.
+  throwErrors: true, // Throw validation errors. Can also be a function.
+  strictTypes: true, // Strip and validates extra properties. Can also be a function.
+  debug: true, // log errors and other messages to the console. Can also be a function.
   resources: {
     // Declare your resources.
     someResource: new Resource({
@@ -46,10 +52,16 @@ const client = new Client({
           payloadConstructor(options) { // use options to construct a payload
             return {...}
           },
-          async mock(path, payload) { // If defined, the response will be mocked and not validated.
-            return {
-              ...
-            }
+          // If defined, the response will be mocked and not validated.
+          // You can use the client as usual, the only difference is that axios will not be called.
+          mock(url, payload) { // This needs to return a promise. You can use the url or the payload to customize the mocked response.
+            return Promise.resolve({
+              status: HttpStatus.OK as const, // This needs to be `as const` so the mock can get the correct type.
+              // You can use createSample to get better errors and infer the types better instead of using `as const`.
+              data: responseModel.createSample({
+                foo: 'bar'
+              })
+            });
           },
           headers(options) { // headers to send with the request.
             return {...}
@@ -57,12 +69,7 @@ const client = new Client({
           responses: [
             new ApiResponse({
               status: HttpStatus.OK,
-              model: new Model({
-                name: 'Some model name',
-                schema: t.interface({
-                  foo: t.literal('bar'),
-                }),
-              }),
+              model: responseModel,
             }),
           ],
         }),
@@ -90,7 +97,7 @@ Everything will be properly typed. jsDocs persist and you can rename and jump to
 
 Also, one important thing to note is that the requests will fail if there is an unexpected response.
 
-That means that an internal server error will not fail the requests when expected. Instead, you need to use type guards in the response status.
+That means that an internal server error will not fail the requests if it was declared as one of the possible responses. Instead, you need to use type guards in the response status.
 
 for example, lets take the client from before, and lets say it has a response declared for the internal server error:
 
@@ -146,7 +153,7 @@ const client = new Client({
 
 ## Response body alias
 
-To make it better to read with APIs based on the JSON API model. You can use `res.body.data` instead of `res.data.data`.
+To make it better to read with APIs based on the JSON API model. You can use `res.body.data` instead of `res.data.data`. This also works with mocked responses.
 
 ## Model validation listeners
 
