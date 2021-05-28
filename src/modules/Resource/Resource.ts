@@ -44,7 +44,7 @@ export class Resource<
    * Executes an operation inside a resource.
    */
   public execute<K extends keyof Operations>(
-    options: { base: URL } & Pick<
+    options: { base: URL, globalHeaders: Record<string, string> } & Pick<
       Client<
         Record<string, Resource<Operations, GlobalResponses>>,
         GlobalResponses

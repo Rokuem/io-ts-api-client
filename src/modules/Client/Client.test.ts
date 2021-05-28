@@ -10,6 +10,7 @@ import { HttpStatus } from "../../constants/HttpStatus";
 import { t } from "../t/t";
 import { Model, ModelInterface } from "../Model/Model";
 import mockedAxios from "../../../__mocks__/axios";
+import axios from 'axios';
 
 const okSampleResponse = new ApiResponse({
   status: HttpStatus.OK,
@@ -157,6 +158,12 @@ describe("A Client", () => {
     });
 
     describe("When executing an operation", () => {
+      const axiosRequest = axios.request;
+
+      afterEach(() => {
+        axios.request = axiosRequest;
+      })
+
       test("It should have the correct URL", () => {
         jest.spyOn(mockedAxios, "request");
 
@@ -177,6 +184,34 @@ describe("A Client", () => {
             ).href,
           })
         );
+      });
+
+      test('It should consider global headers', () => {
+        const request = axios.request = jest.fn();
+        client.globalHeaders = {
+          'Foo': 'bar',
+        }
+
+        const existingHeaders = {
+          'Foo': 'bar',
+        };
+
+        client.resources.samples.operations.getOk.headers = () => existingHeaders;
+
+        API.samples.getOk();
+
+        expect(request).toHaveBeenCalledWith(expect.objectContaining({ headers: {...client.globalHeaders, ...existingHeaders} }));
+
+        client.globalHeaders = (resource) => ({
+          'Resource': resource
+        });
+
+        API.samples.getOk();
+
+        expect(request).toHaveBeenCalledWith(expect.objectContaining({ headers: {
+          'Resource': 'samples',
+          ...existingHeaders
+        }}));
       });
 
       describe('When the response status is not declared', () => {

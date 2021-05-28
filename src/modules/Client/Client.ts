@@ -70,7 +70,12 @@ export class Client<
    * This can also be a function with the context as a argument (resource name, operation name, options).
    * It is recommended to define the urls in the operation with the Operation.path and only the base here.
    */
-  public base!: URL | (<ResourceName extends keyof Resources>(resource: ResourceName) => URL);
+  public base!: URL | ((resource: keyof Resources) => URL);
+
+  /**
+   * Headers that should be used in all operations.
+   */
+  public globalHeaders: Record<string, string> | ((resource: keyof Resources) => Record<string, string>) = {};
 
   /**
    * List of resources provided by the base url of the API.
@@ -91,7 +96,7 @@ export class Client<
       Client<Resources, GlobalResponses>,
       'base' | 'globalResponses' | 'resources'
     > &
-      Partial<ApplyComputable<ValidationOptions>>
+      Partial<ApplyComputable<ValidationOptions> & Pick<Client<Resources, GlobalResponses>, 'globalHeaders'>>
   ) {
     Object.assign(this, options);
   }
@@ -140,6 +145,7 @@ export class Client<
             }
 
             return resource.execute({
+              globalHeaders: typeof this.globalHeaders === 'function' ? this.globalHeaders(resourceName) : this.globalHeaders,
               operation: operationName,
               axiosInstance: this.axiosInstance,
               options,

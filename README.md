@@ -34,6 +34,9 @@ const client = new Client({
   throwErrors: true, // Throw validation errors. Can also be a function.
   strictTypes: true, // Strip and validates extra properties. Can also be a function.
   debug: true, // log errors and other messages to the console. Can also be a function.
+  globalHeaders: (resource) => { // Define headers that should be included in all requests.
+    Resource: resource
+  },
   resources: {
     // Declare your resources.
     someResource: new Resource({
@@ -63,7 +66,7 @@ const client = new Client({
               })
             });
           },
-          headers(options) { // headers to send with the request.
+          headers(options) { // headers to send with the request. Can also be an object.
             return {...}
           },
           responses: [

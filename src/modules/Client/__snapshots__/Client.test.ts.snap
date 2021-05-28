@@ -11,6 +11,7 @@ Client {
   },
   "base": [Function],
   "debug": false,
+  "globalHeaders": Object {},
   "globalResponses": Array [
     ApiResponse {
       "model": Model {
