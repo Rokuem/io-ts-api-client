@@ -79,7 +79,7 @@ export class Operation<
           >
         : Responses[key];
     }[number]
-  >>;
+  > | false>;
   /**
    * Function to construct the payload using the provided options for the operation.
    */
@@ -168,18 +168,24 @@ export class Operation<
       | GetResponses<Responses>
       | GetResponses<[...GlobalResponses[]]>;
 
+    const requestUrl = this.url(base as any, options as any);
+
     if (this.mock) {
       log('mock detected!');
-      const mock = await this.mock((this.url as any)(base, options), this.payloadConstructor?.(options));
+      const mock = await this.mock(requestUrl, this.payloadConstructor?.(options));
       log('Mock: ', mock);
-      return { ...mock, body: (mock as any)?.data } as $Response;
+      if (mock !== false) {
+        return { ...mock, body: (mock as any)?.data } as $Response;
+      }
     }
 
     try {
+      console.log('Global headers: ', globalHeaders)
+      log('Making axios request');
       const response = await axiosInstance.request<$Response>({
         method: this.method as any,
         data: this.payloadConstructor?.(options),
-        url: (this.url as any)(base, options).href,
+        url: requestUrl.href,
         headers: {...globalHeaders, ...(typeof this.headers === 'function' ? this.headers?.(options) : this.headers || {})},
         validateStatus: (status) =>
           this.responses.some((res) => res.status === status),
@@ -225,7 +231,7 @@ export class Operation<
 
       responseDeclaration.model.operation = this.name;
 
-      responseDeclaration.model.validate((response as any).data, {
+      const data = responseDeclaration.model.validate((response as any).data, {
         debug,
         strictTypes,
         throwErrors,
@@ -233,7 +239,8 @@ export class Operation<
 
       return {
         ...response,
-        body: (response as any).data,
+        data,
+        body: data,
       };
     } catch (error) {
       if ('response' in error) {

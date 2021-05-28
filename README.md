@@ -57,7 +57,7 @@ const client = new Client({
           },
           // If defined, the response will be mocked and not validated.
           // You can use the client as usual, the only difference is that axios will not be called.
-          mock(url, payload) { // This needs to return a promise. You can use the url or the payload to customize the mocked response.
+          mock(url, payload) { // This needs to return a promise. You can use the url or the payload to customize the mocked response. If the promise returns 'false', the mock will be ignored.
             return Promise.resolve({
               status: HttpStatus.OK as const, // This needs to be `as const` so the mock can get the correct type.
               // You can use createSample to get better errors and infer the types better instead of using `as const`.

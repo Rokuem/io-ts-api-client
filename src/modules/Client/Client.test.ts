@@ -10,7 +10,6 @@ import { HttpStatus } from "../../constants/HttpStatus";
 import { t } from "../t/t";
 import { Model, ModelInterface } from "../Model/Model";
 import mockedAxios from "../../../__mocks__/axios";
-import axios from 'axios';
 
 const okSampleResponse = new ApiResponse({
   status: HttpStatus.OK,
@@ -25,6 +24,7 @@ const okSampleResponse = new ApiResponse({
 describe("A Client", () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   const client = new Client({
@@ -155,17 +155,9 @@ describe("A Client", () => {
           >
         );
       });
-    });
 
-    describe("When executing an operation", () => {
-      const axiosRequest = axios.request;
-
-      afterEach(() => {
-        axios.request = axiosRequest;
-      })
-
-      test("It should have the correct URL", () => {
-        jest.spyOn(mockedAxios, "request");
+      test.skip('The mock should be ignored if it returns false', async () => {
+        client.resources.samples.operations.getOk.mock = () => Promise.resolve(false) as any;
 
         mockedAxios.nextResponse = {
           status: 200,
@@ -173,9 +165,29 @@ describe("A Client", () => {
             ok: true,
           },
         };
-        API.samples.getOk();
+        
+        const res = await API.samples.getOk();
+        
+        expect(res.data).toEqual({
+          ok: true
+        })
+      })
+    });
 
-        expect(mockedAxios.request).toHaveBeenCalledWith(
+    describe("When executing an operation", () => {
+      test("It should have the correct URL", async () => {
+        mockedAxios.nextResponse = {
+          status: 200,
+          data: {
+            ok: true,
+          },
+        };
+
+        const spy = jest.spyOn(mockedAxios, 'request');
+
+        await API.samples.getOk();
+
+        expect(spy).toHaveBeenCalledWith(
           expect.objectContaining({
             url: (client.resources.samples.operations.getOk.url as any)(
               new URL(
@@ -186,29 +198,37 @@ describe("A Client", () => {
         );
       });
 
-      test('It should consider global headers', () => {
-        const request = axios.request = jest.fn();
+      test('It should consider global headers', async () => {
         client.globalHeaders = {
           'Foo': 'bar',
         }
 
         const existingHeaders = {
-          'Foo': 'bar',
+          'Foo2': 'bar2',
         };
 
         client.resources.samples.operations.getOk.headers = () => existingHeaders;
 
-        API.samples.getOk();
+        const spy = jest.spyOn(mockedAxios, 'request');
 
-        expect(request).toHaveBeenCalledWith(expect.objectContaining({ headers: {...client.globalHeaders, ...existingHeaders} }));
+        mockedAxios.nextResponse = {
+          status: 200,
+          data: {
+            ok: true
+          }
+        }
+
+        await API.samples.getOk();
+
+        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ headers: {...client.globalHeaders, ...existingHeaders} }));
 
         client.globalHeaders = (resource) => ({
           'Resource': resource
         });
 
-        API.samples.getOk();
+        await API.samples.getOk();
 
-        expect(request).toHaveBeenCalledWith(expect.objectContaining({ headers: {
+        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ headers: {
           'Resource': 'samples',
           ...existingHeaders
         }}));
@@ -315,15 +335,14 @@ describe("A Client", () => {
         });
 
         test("Should not have those properties in the response data", async () => {
-          const request = API.samples.getOk();
           mockedAxios.nextResponse = {
             status: 200,
             data: {
               ok: true,
-              foo: "bar",
+              foo: "bar2",
             },
           };
-          const response = await request;
+          const response = await API.samples.getOk();
 
           expect(response.data).not.toHaveProperty("foo");
         });
