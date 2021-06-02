@@ -55,7 +55,7 @@ export class Operation<
   /**
    * Function to get the object of headers to send with the request.
    */
-  public headers?: Record<string, string> | ((options?: Options) => Record<string, string>);
+  public headers?: Record<string, string> | ((options: Options) => Record<string, string>);
   /**
    * Function to mock the response. Useful for testing and for development when the API is not ready.
    */
