@@ -12,10 +12,18 @@ export const t = {
    * Creates intersection between required and optional props.
    * @since 0.7.4
    */
-  schema: <T extends types.Props, P extends types.Props>(type: { required: T, optional: P }) => types.intersection([
-    types.interface(type.required),
-    types.partial(type.optional)
-  ]),
+  schema: <T extends types.Props, P extends types.Props>(type: { required: T, optional: P }) => {
+    for (const key in type.optional) {
+      type.optional[key] = types.union([type.optional[key], t.null]) as any;
+    }
+
+    return types.intersection([
+      types.interface(type.required),
+      types.partial(type.optional as any as {
+        [key in keyof P]: types.UnionC<[P[key], types.NullC, types.UndefinedC]> extends types.Mixed ? types.UnionC<[P[key], types.NullC, types.UndefinedC]> : never
+      })
+    ])
+  },
   /**
    * Type for valid date strings.
    * @since 0.8.5

@@ -1,3 +1,6 @@
+# 0.14.0
+- t.schema will now accept optional attributes values as either null or undefined.
+
 # 0.13.0
 - It is now possible to ignore mocks by returning Promise.resolve(false).
 - Fixed strictTypes response
