@@ -13,6 +13,12 @@ const operation = new Operation({
     name: 'operation payload',
     schema: t.undefined,
   }),
+  options: {} as {
+    a: string
+  },
+  payloadConstructor(_options) {
+    return undefined
+  },
   responses: [
     new ApiResponse({
       model: new Model({
@@ -49,5 +55,10 @@ describe('Operation', () => {
     expectTypeOf(operation.responses[0].status).toMatchTypeOf(
       HttpStatus.OK as const
     );
+  });
+
+  test('Should have correct type for the payload constructor', () => {
+    expectTypeOf(operation.payloadConstructor).parameters.toMatchTypeOf([operation.options]);
+    expectTypeOf(operation.payloadConstructor).returns.toMatchTypeOf(operation.payloadModel.tsInterface);
   });
 });

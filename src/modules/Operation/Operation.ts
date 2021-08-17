@@ -90,6 +90,7 @@ export class Operation<
       | 'url'
       | 'method'
       | 'payloadModel'
+      | 'payloadConstructor'
       | 'responses'
       | 'options'
       | 'headers'
@@ -199,7 +200,7 @@ export class Operation<
         (res) => res.status === response.status
       );
 
-      log('matching Responses: ', matchingResponses);
+      log('matching Responses: ', matchingResponses.length);
 
       let [responseDeclaration] = matchingResponses;
 
@@ -214,8 +215,6 @@ export class Operation<
           status: responseDeclaration.status,
         });
       }
-
-      log('Response declaration: ', responseDeclaration);
 
       if (
         !responseDeclaration ||

@@ -1,6 +1,6 @@
 {
   "name": "io-ts-api-client",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "main": "dist/main.js",
   "license": "MIT",
   "description": "An API client constructor with runtime validation based on io-ts. A nice solution to making sure the data you receive matches the typescript interfaces.",
@@ -10,6 +10,7 @@
     "prepare": "yarn build",
     "build": "yarn ts-node scripts/build.ts"
   },
+  "sideEffects": false,
   "files": [
     "/dist",
     "/src",

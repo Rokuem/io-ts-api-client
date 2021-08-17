@@ -1,3 +1,6 @@
+# 0.14.1
+- Fix payloadConstructor missing from Operation options. (thanks @AlgisSulcas)
+
 # 0.14.0
 - t.schema will now accept optional attributes values as either null or undefined.
 
