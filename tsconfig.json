@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "lib": ["esnext", "DOM"],
-    "target": "es2019",
+    "lib": ["esnext", "dom"],
+    "target": "es5",
     "moduleResolution": "node",
     "module": "commonjs",
     "strict": true,
@@ -17,7 +17,8 @@
     "outDir": "dist",
     "sourceMap": true,
     "rootDir": "src",
-    "pretty": true
+    "pretty": true,
+    "declaration": true,
   },
   "include": ["src", "jest"],
   "exclude": ["node_modules", "**/*.test.ts"]

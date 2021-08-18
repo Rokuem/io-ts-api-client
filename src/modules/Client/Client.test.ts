@@ -244,13 +244,12 @@ describe("A Client", () => {
           }
         });
 
-        test('The operation should throw and error', async (done) => {
+        test('The operation should throw and error', async () => {
           try {
             await API.samples.getOk();
             fail();
           } catch (error) {
             expect(error).toMatchSnapshot('Missing Model Error');
-            done();
           }
         })
       })

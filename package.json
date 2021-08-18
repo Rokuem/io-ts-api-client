@@ -1,16 +1,16 @@
 {
   "name": "io-ts-api-client",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "main": "dist/main.js",
   "license": "MIT",
   "description": "An API client constructor with runtime validation based on io-ts. A nice solution to making sure the data you receive matches the typescript interfaces.",
   "types": "dist/main.d.ts",
+  "sideEffects": false,
   "scripts": {
     "test": "jest",
-    "prepare": "yarn build",
-    "build": "yarn ts-node scripts/build.ts"
+    "prepublish": "yarn build",
+    "build": "webpack"
   },
-  "sideEffects": false,
   "files": [
     "/dist",
     "/src",
@@ -36,18 +36,22 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
+    "@types/webpack": "^5.28.0",
     "dotenv": "^8.2.0",
     "expect-type": "^0.9.0",
     "io-ts-types": "^0.5.12",
-    "jest": "^26.6.3",
+    "jest": "^27.0.6",
     "jest-environment-node": "^26.6.2",
     "monocle-ts": "^2.3.3",
     "newtype-ts": "^0.3.4",
     "ts-essentials": "^7.0.1",
-    "ts-jest": "^26.4.4",
+    "ts-jest": "^27.0.5",
+    "ts-loader": "^7.0.1",
     "ts-node": "^9.0.0",
     "tslib": "^2.0.3",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.2",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   },
   "peerDependencies": {
     "axios": "0.x",

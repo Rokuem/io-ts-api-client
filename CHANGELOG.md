@@ -1,3 +1,8 @@
+# 0.15.0
+- Fix audit issues.
+- Use webpack and mark peerDependencies as externals.
+- Update install script in README.md
+
 # 0.14.1
 - Fix payloadConstructor missing from Operation options. (thanks @AlgisSulcas)
 - use sideEffects: false in package.json

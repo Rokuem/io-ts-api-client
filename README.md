@@ -8,13 +8,13 @@ it also possible to use this package to mock requests from the API.
 First, install the module:
 
 ```bash
-npm install io-ts-api-client -S
+npm install io-ts-api-client io-ts fp-ts axios tslib -S
 ```
 
 OR
 
 ```bash
-yarn add io-ts-api-client
+yarn add io-ts-api-client io-ts fp-ts axios tslib
 ```
 
 then, create a client in a folder of your preference:
