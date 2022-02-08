@@ -4,6 +4,8 @@ exports[`Operation Should match the snapshot 1`] = `
 Operation {
   "method": "GET",
   "name": "Operation",
+  "options": Object {},
+  "payloadConstructor": [Function],
   "payloadModel": Model {
     "base": UndefinedType {
       "_tag": "UndefinedType",

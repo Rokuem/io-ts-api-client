@@ -15,6 +15,7 @@
     "importHelpers": true,
     "noErrorTruncation": true,
     "outDir": "dist",
+    "declarationDir": "./",
     "sourceMap": true,
     "rootDir": "src",
     "pretty": true,

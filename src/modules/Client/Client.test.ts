@@ -143,7 +143,9 @@ describe("A Client", () => {
       test("The response should match the mock", async () => {
         const response = await request;
         expect(response).toEqual(
-         expect.objectContaining(await client.resources.samples.operations.withMock.mock?.())
+          expect.objectContaining(
+            await client.resources.samples.operations.withMock.mock?.()
+          )
         );
       });
 
@@ -156,8 +158,9 @@ describe("A Client", () => {
         );
       });
 
-      test.skip('The mock should be ignored if it returns false', async () => {
-        client.resources.samples.operations.getOk.mock = () => Promise.resolve(false) as any;
+      test.skip("The mock should be ignored if it returns false", async () => {
+        client.resources.samples.operations.getOk.mock = () =>
+          Promise.resolve(false) as any;
 
         mockedAxios.nextResponse = {
           status: 200,
@@ -165,13 +168,13 @@ describe("A Client", () => {
             ok: true,
           },
         };
-        
+
         const res = await API.samples.getOk();
-        
+
         expect(res.data).toEqual({
-          ok: true
-        })
-      })
+          ok: true,
+        });
+      });
     });
 
     describe("When executing an operation", () => {
@@ -183,7 +186,7 @@ describe("A Client", () => {
           },
         };
 
-        const spy = jest.spyOn(mockedAxios, 'request');
+        const spy = jest.spyOn(mockedAxios, "request");
 
         await API.samples.getOk();
 
@@ -198,61 +201,70 @@ describe("A Client", () => {
         );
       });
 
-      test('It should consider global headers', async () => {
+      test("It should consider global headers", async () => {
         client.globalHeaders = {
-          'Foo': 'bar',
-        }
-
-        const existingHeaders = {
-          'Foo2': 'bar2',
+          Foo: "bar",
         };
 
-        client.resources.samples.operations.getOk.headers = () => existingHeaders;
+        const existingHeaders = {
+          Foo2: "bar2",
+        };
 
-        const spy = jest.spyOn(mockedAxios, 'request');
+        client.resources.samples.operations.getOk.headers = () =>
+          existingHeaders;
+
+        const spy = jest.spyOn(mockedAxios, "request");
 
         mockedAxios.nextResponse = {
           status: 200,
           data: {
-            ok: true
-          }
-        }
+            ok: true,
+          },
+        };
 
         await API.samples.getOk();
 
-        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ headers: {...client.globalHeaders, ...existingHeaders} }));
+        expect(spy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            headers: { ...client.globalHeaders, ...existingHeaders },
+          })
+        );
 
         client.globalHeaders = (resource) => ({
-          'Resource': resource
+          Resource: resource,
         });
 
         await API.samples.getOk();
 
-        expect(spy).toHaveBeenCalledWith(expect.objectContaining({ headers: {
-          'Resource': 'samples',
-          ...existingHeaders
-        }}));
+        expect(spy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            headers: {
+              Resource: "samples",
+              ...existingHeaders,
+            },
+          })
+        );
       });
 
-      describe('When the response status is not declared', () => {
+      describe("When the response status is not declared", () => {
         beforeEach(() => {
           mockedAxios.nextResponse = {
             status: 333,
             data: {
-              ok: true
-            }
-          }
+              ok: true,
+            },
+          };
         });
 
-        test('The operation should throw and error', async () => {
+        test("The operation should throw and error", async () => {
           try {
             await API.samples.getOk();
             fail();
           } catch (error) {
-            expect(error).toMatchSnapshot('Missing Model Error');
+            expect(error).toMatchSnapshot("Missing Model Error");
           }
-        })
-      })
+        });
+      });
     });
     describe("When executing a operation with response data", () => {
       test("The response.data should contain the expected model", async () => {
@@ -390,8 +402,12 @@ describe("A Client", () => {
               await API.samples.getOk();
               fail();
             } catch (e) {
-              error = e;
-              expect(e).toBeDefined();
+              if (e instanceof Error) {
+                error = e;
+                expect(e).toBeDefined();
+              } else {
+                fail(new Error("Error is not an instance of error"));
+              }
             }
           });
 

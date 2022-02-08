@@ -1,13 +1,13 @@
-import { AxiosError } from 'axios';
-import { HttpMethod } from '../../constants/httpMethod';
-import { ApiResponse } from '../ApiResponse/ApiResponse';
-import { Model } from '../Model/Model';
-import { ModelInterface } from '../Model/Model';
-import { ResponseWithStatus } from '../../helpers/ResponseWithStatus.type';
-import { t } from '../t/t';
-import { Client } from '../Client/Client';
-import { Resource } from '../Resource/Resource';
-import { ValidationOptions } from '../types';
+import { AxiosError } from "axios";
+import { HttpMethod } from "../../constants/httpMethod";
+import { ApiResponse } from "../ApiResponse/ApiResponse";
+import { Model } from "../Model/Model";
+import { ModelInterface } from "../Model/Model";
+import { ResponseWithStatus } from "../../helpers/ResponseWithStatus.type";
+import { t } from "../t/t";
+import { Client } from "../Client/Client";
+import { Resource } from "../Resource/Resource";
+import { ValidationOptions } from "../types";
 
 /**
  * Operations describes a request.
@@ -23,7 +23,7 @@ export class Operation<
   /**
    * Name of the operation. Infered when the client is made.
    */
-  public name = 'Operation';
+  public name = "Operation";
   /**
    * function to construct the url of the operation.
    *
@@ -55,7 +55,9 @@ export class Operation<
   /**
    * Function to get the object of headers to send with the request.
    */
-  public headers?: Record<string, string> | ((options?: Options) => Record<string, string>);
+  public headers?:
+    | Record<string, string>
+    | ((options?: Options) => Record<string, string>);
   /**
    * Function to mock the response. Useful for testing and for development when the API is not ready.
    */
@@ -68,18 +70,21 @@ export class Operation<
      * Payload returned by the PayloadConstructor
      */
     payload?: ModelInterface<Payload>
-  ) => Promise<Partial<
-    {
-      [key in keyof Responses]: Responses[key] extends ApiResponse<any, any>
-        ? Partial<
-            ResponseWithStatus<
-              Responses[key]['status'],
-              ModelInterface<Responses[key]['model']>
-            >
-          >
-        : Responses[key];
-    }[number]
-  > | false>;
+  ) => Promise<
+    | Partial<
+        {
+          [key in keyof Responses]: Responses[key] extends ApiResponse<any, any>
+            ? Partial<
+                ResponseWithStatus<
+                  Responses[key]["status"],
+                  ModelInterface<Responses[key]["model"]>
+                >
+              >
+            : Responses[key];
+        }[number]
+      >
+    | false
+  >;
   /**
    * Function to construct the payload using the provided options for the operation.
    */
@@ -87,14 +92,14 @@ export class Operation<
   constructor(
     config: Pick<
       Operation<Payload, Responses, Method, Options>,
-      | 'url'
-      | 'method'
-      | 'payloadModel'
-      | 'payloadConstructor'
-      | 'responses'
-      | 'options'
-      | 'headers'
-      | 'mock'
+      | "url"
+      | "method"
+      | "payloadModel"
+      | "payloadConstructor"
+      | "responses"
+      | "options"
+      | "headers"
+      | "mock"
     >
   ) {
     Object.assign(this, config);
@@ -125,18 +130,18 @@ export class Operation<
     debug,
     throwErrors,
     strictTypes,
-    globalHeaders
+    globalHeaders,
   }: {
-    globalHeaders: Record<string, string>
+    globalHeaders: Record<string, string>;
   } & Pick<
     Client<
       Record<string, Resource<Record<string, this>, GlobalResponses>>,
       GlobalResponses
     >,
-    'base' | 'globalResponses' | 'axiosInstance'
+    "base" | "globalResponses" | "axiosInstance"
   > &
     ValidationOptions &
-    Pick<this, 'options'>) {
+    Pick<this, "options">) {
     const log = (...message: any[]) => {
       if (debug) {
         console.log(...message);
@@ -151,7 +156,7 @@ export class Operation<
 
     if (this.payloadConstructor) {
       const payload = this.payloadConstructor?.(options);
-      log('Payload: ', payload);
+      log("Payload: ", payload);
       this.payloadModel?.validate(payload, {
         debug,
         throwErrors,
@@ -161,7 +166,7 @@ export class Operation<
 
     type GetResponses<T extends [...ApiResponse<any, any>[]]> = {
       [key in keyof T]: T[key] extends ApiResponse<any, any>
-        ? ResponseWithStatus<T[key]['status'], ModelInterface<T[key]['model']>>
+        ? ResponseWithStatus<T[key]["status"], ModelInterface<T[key]["model"]>>
         : T[key];
     }[number];
 
@@ -172,22 +177,29 @@ export class Operation<
     const requestUrl = this.url(base as any, options as any);
 
     if (this.mock) {
-      log('mock detected!');
-      const mock = await this.mock(requestUrl, this.payloadConstructor?.(options));
-      log('Mock: ', mock);
+      log("mock detected!");
+      const mock = await this.mock(
+        requestUrl,
+        this.payloadConstructor?.(options)
+      );
+      log("Mock: ", mock);
       if (mock !== false) {
         return { ...mock, body: (mock as any)?.data } as $Response;
       }
     }
 
     try {
-      console.log('Global headers: ', globalHeaders)
-      log('Making axios request');
+      log("Making axios request");
       const response = await axiosInstance.request<$Response>({
         method: this.method as any,
         data: this.payloadConstructor?.(options),
         url: requestUrl.href,
-        headers: {...globalHeaders, ...(typeof this.headers === 'function' ? this.headers?.(options) : this.headers || {})},
+        headers: {
+          ...globalHeaders,
+          ...(typeof this.headers === "function"
+            ? this.headers?.(options)
+            : this.headers || {}),
+        },
         validateStatus: (status) =>
           this.responses.some((res) => res.status === status),
       });
@@ -200,7 +212,7 @@ export class Operation<
         (res) => res.status === response.status
       );
 
-      log('matching Responses: ', matchingResponses.length);
+      log("matching Responses: ", matchingResponses.length);
 
       let [responseDeclaration] = matchingResponses;
 
@@ -210,7 +222,7 @@ export class Operation<
             schema: t.intersection([
               ...matchingResponses.map((res) => res.model.base),
             ] as any),
-            name: matchingResponses.map((res) => res.model.name).join(' | '),
+            name: matchingResponses.map((res) => res.model.name).join(" | "),
           }),
           status: responseDeclaration.status,
         });
@@ -242,10 +254,14 @@ export class Operation<
         body: data,
       };
     } catch (error) {
-      if ('response' in error) {
+      if (typeof error === "object" && error && "response" in error) {
         const axiosError = error as AxiosError;
-        logError('Unexpected response: ', axiosError.response);
-        axiosError.message = `MODEL NOT FOUND - Unexpected response received from operation ${this.name}: ${axiosError.response?.status} - ${JSON.stringify(axiosError.response?.data)}`;
+        logError("Unexpected response: ", axiosError.response);
+        axiosError.message = `MODEL NOT FOUND - Unexpected response received from operation ${
+          this.name
+        }: ${axiosError.response?.status} - ${JSON.stringify(
+          axiosError.response?.data
+        )}`;
       }
 
       throw error;
